@@ -1,1 +1,0 @@
-pdflatex sct-2.tex && evince sct-2.pdf
