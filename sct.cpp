@@ -12,7 +12,7 @@ using namespace std;
 
 typedef long double my_real;
 
-inline bool isFullSquare(my_real n){
+inline bool isFullSquare(const my_real& n){
 //	cout << n << "..." <<endl;
 /*	my_real f = floor(n);
 	if(f-floor(f)>1.0/1024/1024)
@@ -111,14 +111,13 @@ void getCandidatePoints(int d){
 	// Получаем начальное время в относительных единицах
 	unsigned int start_time =  clock();
 
-	int length = d*(d+2);
 
-	quad_x = new my_real[length];
-	quad_y = new my_real[length];
-	duet_x = new my_real[length];
-	duet_y = new my_real[length];
-	osev_x = new my_real[length];
-	osev_y = new my_real[length];
+	quad_x = new my_real[d*d];
+	quad_y = new my_real[d*d];
+	duet_x = new my_real[d];
+	duet_y = new my_real[d];
+	osev_x = new my_real[d];
+	osev_y = new my_real[d];
 
 
 	getCandidatePoints_quad(d);
@@ -153,11 +152,11 @@ bool reduce(my_real* arr_x, my_real* arr_y, size_t& arr_l, unsigned short step, 
 	points_l[1] = &duet_l;
 	points_l[2] = &osev_l;
 
-
 	for(size_t i = 0; i < arr_l; i+=step){
 //		cout << "!"<<endl;
 		unsigned short friends = p - (2 - 1); //2 общих минус 1 - сама точка
 		size_t j;
+
 		short q;
 		for(q = 0; q < 3  && friends; q++){
 			for(j = 0; j < *points_l[q] && friends; j++){
@@ -174,6 +173,33 @@ bool reduce(my_real* arr_x, my_real* arr_y, size_t& arr_l, unsigned short step, 
 
 			}
 		}
+
+/*		for(j = 0; j < quad_l && friends; j++){
+			if(isFullSquare(
+				pow(arr_x[i]-quad_x[j],2.0)+
+				pow(arr_y[i]-quad_y[j],2.0)
+			)){
+				friends--;
+			}
+		}
+		for(j = 0; j < duet_l && friends; j++){
+			if(isFullSquare(
+				pow(arr_x[i]-duet_x[j],2.0)+
+				pow(arr_y[i]-duet_y[j],2.0)
+			)){
+				friends--;
+			}
+		}
+		for(j = 0; j < osev_l && friends; j++){
+			if(isFullSquare(
+				pow(arr_x[i]-osev_x[j],2.0)+
+				pow(arr_y[i]-osev_y[j],2.0)
+			)){
+				friends--;
+			}
+		}*/
+
+
 		if(friends){
 			memcpy(arr_x+i,arr_x+arr_l-step,step*sizeof(my_real));
 			memcpy(arr_y+i,arr_y+arr_l-step,step*sizeof(my_real));
