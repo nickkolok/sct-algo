@@ -231,10 +231,7 @@ function areSymmetric(a,b,maxD){
 	;
 }
 
-function reduceCandidatePoints(arr,minLinks,maxD){
-	var lengthBefore=arr.length;
-	var timeBefore=Date.now();
-
+function reduceCandidatePointsWithWeight(arr,minLinks,maxD){
 	var m=minLinks-2;//Две неучтённых на основание
 
 	for(var i=0; i<arr.length; i++){
@@ -274,6 +271,15 @@ function reduceCandidatePoints(arr,minLinks,maxD){
 			i--;
 		}
 	}
+
+}
+
+
+function reduceCandidatePoints(arr,minLinks,maxD){
+	var lengthBefore=arr.length;
+	var timeBefore=Date.now();
+
+	reduceCandidatePointsWithWeight(arr,minLinks,maxD);
 
 	if(lengthBefore>arr.length){
 		console.log("Граф урезан ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+arr.length);
