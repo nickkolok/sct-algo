@@ -296,7 +296,10 @@ function reduceCandidatePoints(arr,minLinks,maxD){
 
 
 function serializeCandidatePoints(arr,pow,maxD){
-	fs.writeFileSync("dumps/"+pow+"_"+maxD+"_"+Date.now()+".sct.json",JSON.stringify(arr));
+	var timeBefore=Date.now();
+	var dumpName=pow+"_"+maxD+"_"+Date.now();
+	fs.writeFileSync("dumps/"+dumpName+".sct.json",JSON.stringify(arr));
+	console.log("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
 }
 
 function mapFriends(cand,maxD){
