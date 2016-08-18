@@ -1,4 +1,6 @@
 var fs = require('fs');
+var ls = require('ls');
+
 
 {
        function sgn(x)
@@ -178,7 +180,7 @@ function Point(x,y) {
 };
 
 
-function getCandidatePoints(d){
+function calculateCandidatePoints(d){
 	var timeBefore=Date.now();
 	var candidatePoints=[];
 
@@ -300,6 +302,23 @@ function serializeCandidatePoints(arr,pow,maxD){
 	var dumpName=pow+"_"+maxD+"_"+Date.now();
 	fs.writeFileSync("dumps/"+dumpName+".sct.json",JSON.stringify(arr));
 	console.log("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
+}
+
+function deserializeCandidatePoints(pow,maxD){
+	var dumps = ls('dumps/'+pow+'_'+maxD+'_*.sct.json');
+	if(!dumps.length){
+		// Нет нужного дампа
+		console.log('Дамп для мощности '+pow+' и диаметра '+maxD+' не найден');
+		return false;
+	}
+	var dump = dumps[dumps.length-1].full;
+	try{
+		console.log('Найден дамп '+dump);
+		return JSON.parse(fs.readFileSync(dump,'utf-8'));
+	}catch(e){
+		console.log('Ошибка при чтении дампа '+dump);
+		return false;
+	}
 }
 
 function mapFriends(cand,maxD){
@@ -449,10 +468,18 @@ function reduceX(cand,firstX){
 	console.log("Удаление осевых точек ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+cand.length+", неосевых "+firstX);
 }
 
+function getCandidatePoints(targetPow, maxD){
+	var cand;
+	if(cand = deserializeCandidatePoints(targetPow,maxD)){
+		return cand;
+	}
+	return calculateCandidatePoints(maxD);
+}
+
 function findSCTs(targetPow,maxD){
 	console.log('Ищем СЦТ мощности '+targetPow+' с основанием '+maxD);
 	var t=new Date().getTime();
-	var cand=getCandidatePoints(maxD,maxD);
+	var cand=getCandidatePoints(targetPow, maxD);
 	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
 		var firstX=separateX(cand);
