@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 {
        function sgn(x)
         {
@@ -283,10 +285,18 @@ function reduceCandidatePoints(arr,minLinks,maxD){
 
 	if(lengthBefore>arr.length){
 		console.log("Граф урезан ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+arr.length);
+		if(minLinks >= 12){
+			serializeCandidatePoints(arr,minLinks+1,maxD);
+		}
 		reduceCandidatePoints(arr,minLinks,maxD);
 	}else{
 		console.log("Холостой проход по графу ("+(Date.now() - timeBefore)+" мс)");
 	}
+}
+
+
+function serializeCandidatePoints(arr,pow,maxD){
+	fs.writeFileSync("dumps/"+pow+"_"+maxD+"_"+Date.now()+".sct.json",JSON.stringify(arr));
 }
 
 function mapFriends(cand,maxD){
@@ -440,7 +450,7 @@ function findSCTs(targetPow,maxD){
 	console.log('Ищем СЦТ мощности '+targetPow+' с основанием '+maxD);
 	var t=new Date().getTime();
 	var cand=getCandidatePoints(maxD,maxD);
-	reduceCandidatePoints(cand,targetPow-1);
+	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
 		var firstX=separateX(cand);
 		reduceX(cand,firstX);
