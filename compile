@@ -1,0 +1,5 @@
+#!/bin/bash
+pdflatex statya.tex
+pdflatex statya.tex
+evince   statya.pdf
+
