@@ -227,12 +227,17 @@ function generateArrayOfOnes(len){
 }
 
 function generateZeroNaturalSequence(len){
+	return generateNaturalSequence(len,0);
+}
+
+function generateNaturalSequence(len,from){
 	var arr=[];
 	for(var i=0; i<len; i++){
-		arr[i]=i;
+		arr[i]=i+from;
 	}
 	return arr;
 }
+
 
 function multArr(arr1,arr2){
 	var len=Math.min(arr1.length,arr2.length);
@@ -315,20 +320,132 @@ function findSCTs(targetPow,maxD){
 	var cand=getCandidatePoints(targetPow, maxD);
 	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
-		var firstX=separateX(cand);
-		reduceX(cand,firstX);
-		reduceCandidatePoints(cand,targetPow-1,maxD);
-		firstX=separateX(cand);
-		mapFriends(cand,maxD);
+		processGraph(cand,targetPow,maxD);
+//		bifurcateGraphProcessing(cand,targetPow,maxD,firstX,0);
+
+//		mapFriends(cand,maxD);
+
 //		console.log(firstX);
 //		console.log(cand[0].friendsNums);
-		var candNums=generateArrayOfOnes(cand.length);
-		var arr=[{x:0,y:0},{x:0,y:maxD}];
-		arr[1].friendsNums=generateZeroNaturalSequence(firstX);
-		workWithSCT(arr,cand,candNums,targetPow,maxD,firstX,1);
+
+//		var candNums=generateArrayOfOnes(cand.length);
+//		var arr=[new Point(0,0),new Point(0,maxD)];
+//		arr[1].friendsNums=generateZeroNaturalSequence(firstX);
+//		workWithSCT(arr,cand,candNums,targetPow,maxD,firstX,1);
+
+//		bifurcateGraphProcessing(arr,cand,candNums,targetPow,maxD,firstX);
 	}
-	console.log('Времени затрачено, мс: '+(new Date().getTime()-t))
+	console.log('Времени затрачено, мс: '+(new Date().getTime()-t));
 }
+
+function selectFriends(arr,point,maxD){
+	var newarr=[];
+	for(var i=0; i<arr.length; i++){
+		if(areFriends(arr[i],point)){
+			newarr.push(arr[i]);
+		}
+	}
+	return newarr;
+}
+
+
+function processGraphIterated(cand,targetPow,maxD){
+	if(cand.length < targetPow - 2){
+		return;
+	}
+	separateX(cand);
+	var point = cand[0];
+	var candWith = selectFriends(cand,point,maxD);
+	processGraph(candWith,targetPow,maxD);
+	removeSymmetric(cand,point);
+	processGraphIterated(cand,targetPow,maxD);
+}
+
+
+
+function processGraph(cand,targetPow,maxD){
+	var firstX=separateX(cand);
+	reduceX(cand,firstX);
+	reduceCandidatePoints(cand,targetPow-1,maxD);
+	firstX=separateX(cand);
+
+	mapFriends(cand,maxD);
+
+//	console.log(firstX);
+//	console.log(cand[0].friendsNums);
+
+	var candNums=generateArrayOfOnes(cand.length);
+	var arr=[new Point(0,0),new Point(0,maxD)];
+	arr[1].friendsNums=generateZeroNaturalSequence(firstX);
+	workWithSCT(arr,cand,candNums,targetPow,maxD,firstX,1);
+}
+
+function areFriends(p1,p2,maxD){
+	var d = dist(p1,p2);
+	return (d<=maxD+1/1000000) && isZ(d);
+}
+
+function removeSymmetric(arr,point){
+	for(var i=0; i<arr.length; i++){
+		if(areSymmetric(point,arr[i])){
+			arr[i] = arr[arr.length-1];
+			i--;
+			arr.length--;
+		}
+	}
+}
+
+function bifurcateGraphProcessing(cand,targetPow,maxD,result){
+	if(cand.length < targetPow-2)
+//	if(!cand.length)
+		return 0;
+
+
+
+//	console.log("cand");
+//	console.log(cand);
+
+	// Разбиваем на два случая: первая нетривиальная точка входит/не входит
+	var point = cand[0];
+	var newcand = [];
+//	var newfirstX = 0;
+	for(var i=1; i<cand.length; i++){
+		if(areFriends(point,cand[i],maxD)){
+			newcand.push(cand[i]);
+//			if(cand[i].x){
+//				newfirstX++;
+//			}
+		}
+	}
+
+	var newfirstX = separateX(newcand);
+	mapFriends(newcand,maxD);
+	var newcandNums=generateArrayOfOnes(newcand.length);
+	var newarrWith = [new Point(0,0),new Point(0,maxD),point];
+	newarrWith[2].friendsNums=generateZeroNaturalSequence(newfirstX);
+
+	// Похоже на костыль
+	newarrWith[2].friends=newcandNums;
+
+//	console.log("newcand");
+//	console.log(newcand);
+
+//	console.log("newarrWith");
+//	console.log(newarrWith);
+	//reduce...
+	result += workWithSCT(newarrWith,newcand,newcandNums,targetPow,maxD,newfirstX,1);
+
+	// Если СЦТ, в которые входит первая нетривиальная точка, существуют, то workWithSCT их нашла.
+	// С чистой совестью удаляем первую нетривиальную точку и все ей симметричные
+	removeSymmetric(cand,point);
+	separateX(cand);
+//	if(!result && targetPow >= 14){
+//		serializeCandidatePoints(cand,targetPow,maxD);
+//	}
+
+	bifurcateGraphProcessing(cand,targetPow,maxD,result);
+}
+
 
 
 function isNotTrivial(arr){
@@ -341,6 +458,7 @@ function isNotTrivial(arr){
 }
 
 function logSCT(arr){
+//	console.log(arr);
 	var rez = '\n';
 	for(var i = 0; i < arr.length; i++){
 		rez += '( '+arr[i].x+' ; '+arr[i].y+' );  \t  ';
@@ -371,7 +489,7 @@ var found=0;
 //var d=964;
 var p=3;
 var d=1;
-while(p<15){
+while(d<92){
 	found=0;
 	findSCTs(p,d);
 	if(found){
