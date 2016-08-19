@@ -321,19 +321,6 @@ function findSCTs(targetPow,maxD){
 	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
 		processGraph(cand,targetPow,maxD);
-//		bifurcateGraphProcessing(cand,targetPow,maxD,firstX,0);
-
-//		mapFriends(cand,maxD);
-
-//		console.log(firstX);
-//		console.log(cand[0].friendsNums);
-
-//		var candNums=generateArrayOfOnes(cand.length);
-//		var arr=[new Point(0,0),new Point(0,maxD)];
-//		arr[1].friendsNums=generateZeroNaturalSequence(firstX);
-//		workWithSCT(arr,cand,candNums,targetPow,maxD,firstX,1);
-
-//		bifurcateGraphProcessing(arr,cand,candNums,targetPow,maxD,firstX);
 	}
 	console.log('Времени затрачено, мс: '+(new Date().getTime()-t));
 }
@@ -370,10 +357,6 @@ function processGraph(cand,targetPow,maxD){
 	firstX=separateX(cand);
 
 	mapFriends(cand,maxD);
-
-//	console.log(firstX);
-//	console.log(cand[0].friendsNums);
-
 	var candNums=generateArrayOfOnes(cand.length);
 	var arr=[new Point(0,0),new Point(0,maxD)];
 	arr[1].friendsNums=generateZeroNaturalSequence(firstX);
@@ -395,59 +378,6 @@ function removeSymmetric(arr,point){
 	}
 }
 
-function bifurcateGraphProcessing(cand,targetPow,maxD,result){
-	if(cand.length < targetPow-2)
-//	if(!cand.length)
-		return 0;
-
-
-
-//	console.log("cand");
-//	console.log(cand);
-
-	// Разбиваем на два случая: первая нетривиальная точка входит/не входит
-	var point = cand[0];
-	var newcand = [];
-//	var newfirstX = 0;
-	for(var i=1; i<cand.length; i++){
-		if(areFriends(point,cand[i],maxD)){
-			newcand.push(cand[i]);
-//			if(cand[i].x){
-//				newfirstX++;
-//			}
-		}
-	}
-
-	var newfirstX = separateX(newcand);
-	mapFriends(newcand,maxD);
-	var newcandNums=generateArrayOfOnes(newcand.length);
-	var newarrWith = [new Point(0,0),new Point(0,maxD),point];
-	newarrWith[2].friendsNums=generateZeroNaturalSequence(newfirstX);
-
-	// Похоже на костыль
-	newarrWith[2].friends=newcandNums;
-
-//	console.log("newcand");
-//	console.log(newcand);
-
-//	console.log("newarrWith");
-//	console.log(newarrWith);
-	//reduce...
-	result += workWithSCT(newarrWith,newcand,newcandNums,targetPow,maxD,newfirstX,1);
-
-	// Если СЦТ, в которые входит первая нетривиальная точка, существуют, то workWithSCT их нашла.
-	// С чистой совестью удаляем первую нетривиальную точку и все ей симметричные
-	removeSymmetric(cand,point);
-	separateX(cand);
-//	if(!result && targetPow >= 14){
-//		serializeCandidatePoints(cand,targetPow,maxD);
-//	}
-
-	bifurcateGraphProcessing(cand,targetPow,maxD,result);
-}
-
-
-
 function isNotTrivial(arr){
 	for(var i=0; i<arr.length; i++){
 		if(arr[i].x){
@@ -458,7 +388,6 @@ function isNotTrivial(arr){
 }
 
 function logSCT(arr){
-//	console.log(arr);
 	var rez = '\n';
 	for(var i = 0; i < arr.length; i++){
 		rez += '( '+arr[i].x+' ; '+arr[i].y+' );  \t  ';
