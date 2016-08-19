@@ -168,7 +168,7 @@ function mapFriends(cand,maxD){
 	}
 }
 
-function workWithSCT(arr,cand,candNums,targetPow,maxD,current,firstX){
+function workWithSCT(arr,cand,candNums,targetPow,maxD,firstX){
 	if(arr.length>=targetPow){
 		if(isNotTrivial(arr)){
 			logSCT(arr);
@@ -207,7 +207,7 @@ function workWithSCT(arr,cand,candNums,targetPow,maxD,current,firstX){
 				var newarr=arr.slice();
 				newarr.push(cand[i]);
 				var candNumsNew=multArr(candNums,cand[i].friends);
-				workWithSCT(newarr,cand,candNumsNew,targetPow,maxD,i,firstX);
+				workWithSCT(newarr,cand,candNumsNew,targetPow,maxD,firstX);
 			}
 		}
 	}
@@ -325,7 +325,7 @@ function findSCTs(targetPow,maxD){
 		var candNums=generateArrayOfOnes(cand.length);
 		var arr=[{x:0,y:0},{x:0,y:maxD}];
 		arr[1].friendsNums=generateZeroNaturalSequence(firstX);
-		workWithSCT(arr,cand,candNums,targetPow,maxD,0,firstX,1);
+		workWithSCT(arr,cand,candNums,targetPow,maxD,firstX,1);
 	}
 	console.log('Времени затрачено, мс: '+(new Date().getTime()-t))
 }
