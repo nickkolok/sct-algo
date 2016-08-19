@@ -344,27 +344,17 @@ function processGraphIterated(cand,targetPow,maxD){
 	if(!cand[0].x){//Если остались только осевые
 		return;
 	}
-//	console.log('cand');
-//	console.log(cand);
 
 	var point = cand[0];
-//	console.log(point);
 	var candWith = selectFriends(cand,point,maxD);
 
-//	console.log('candWith');
-//	console.log(candWith);
 
 	processGraph(candWith,targetPow,maxD);
 
 	removeSymmetric(cand,point);
-//	cand.splice(0,1);
 
 	reduceCandidatePoints(cand,targetPow-1,maxD);
-/*
-	if(!found && targetPow >=14){
-		serializeCandidatePoints(cand,targetPow,maxD);
-	}
-*/
+
 	processGraphIterated(cand,targetPow,maxD);
 }
 
