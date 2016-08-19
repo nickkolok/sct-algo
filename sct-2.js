@@ -120,7 +120,7 @@ function reduceCandidatePoints(arr,minLinks,maxD){
 
 	if(lengthBefore>arr.length){
 		console.log("Граф урезан ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+arr.length);
-		if(minLinks >= 12){
+		if(!found && minLinks >= 12){
 			serializeCandidatePoints(arr,minLinks+1,maxD);
 		}
 		reduceCandidatePoints(arr,minLinks,maxD);
@@ -320,7 +320,7 @@ function findSCTs(targetPow,maxD){
 	var cand=getCandidatePoints(targetPow, maxD);
 	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
-		processGraph(cand,targetPow,maxD);
+		processGraphIterated(cand,targetPow,maxD);
 	}
 	console.log('Времени затрачено, мс: '+(new Date().getTime()-t));
 }
@@ -328,7 +328,7 @@ function findSCTs(targetPow,maxD){
 function selectFriends(arr,point,maxD){
 	var newarr=[];
 	for(var i=0; i<arr.length; i++){
-		if(areFriends(arr[i],point)){
+		if(areFriends(arr[i],point,maxD)){
 			newarr.push(arr[i]);
 		}
 	}
@@ -341,10 +341,30 @@ function processGraphIterated(cand,targetPow,maxD){
 		return;
 	}
 	separateX(cand);
+	if(!cand[0].x){//Если остались только осевые
+		return;
+	}
+//	console.log('cand');
+//	console.log(cand);
+
 	var point = cand[0];
+//	console.log(point);
 	var candWith = selectFriends(cand,point,maxD);
+
+//	console.log('candWith');
+//	console.log(candWith);
+
 	processGraph(candWith,targetPow,maxD);
+
 	removeSymmetric(cand,point);
+//	cand.splice(0,1);
+
+	reduceCandidatePoints(cand,targetPow-1,maxD);
+/*
+	if(!found && targetPow >=14){
+		serializeCandidatePoints(cand,targetPow,maxD);
+	}
+*/
 	processGraphIterated(cand,targetPow,maxD);
 }
 
