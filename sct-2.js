@@ -2,27 +2,9 @@ var fs = require('fs');
 var ls = require('ls');
 
 
-{
-
-        function Vector2(x, y)
-        {
-            this.x = x;
-            this.y = y;
-
-        }
-        Vector2.prototype.length = function ()
-        {
-            return Math.sqrt(this.x * this.x + this.y * this.y);
-        }
-
-        Vector2.dist = function (oV1, oV2)
-        {
-            return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
-        }
-
-//Невозбранно скопипащено с  www.litunovskiy.com/gamedev/intersection_of_two_circles
+function dist(oV1, oV2) {
+	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
 }
-
 
 function Point(x,y) {
 	this.x=x;
@@ -94,7 +76,7 @@ function reduceCandidatePointsWithWeight(arr,minLinks,maxD){
 		arr[i].weight=0;
 
 		for(var j=i+1; j<arr.length; j++){
-			if(isZ(Vector2.dist(arr[i],arr[j]))){
+			if(isZ(dist(arr[i],arr[j]))){
 				links++;
 				arr[j].weight++;
 			}
@@ -177,7 +159,7 @@ function mapFriends(cand,maxD){
 		cand[i].friends=new Int8Array(cand.length);
 		cand[i].friendsNums=[];
 		for(var j=cand.length-1; j>i; j--){
-			var d=Vector2.dist(cand[i],cand[j]);
+			var d=dist(cand[i],cand[j]);
 			if( (d<=maxD+1/1000000) && isZ(d) ){
 				cand[i].friends[j] = 1;
 				cand[i].friendsNums.unshift(j);
