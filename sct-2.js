@@ -91,7 +91,7 @@ function areSymmetric(a,b,maxD){
 	;
 }
 
-function reduceCandidatePointsWithWeight(arr,minLinks,maxD){
+function reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric){
 	var m=minLinks-2;//Две неучтённых на основание
 
 	for(var i=0; i<arr.length; i++){
@@ -105,24 +105,26 @@ function reduceCandidatePointsWithWeight(arr,minLinks,maxD){
 			}
 		}
 		if(links<m){
-			if(areSymmetric(arr[i],arr[arr.length-1])){
-				arr.length--;
+			if(!asymmetric){
 				if(areSymmetric(arr[i],arr[arr.length-1])){
 					arr.length--;
 					if(areSymmetric(arr[i],arr[arr.length-1])){
 						arr.length--;
+						if(areSymmetric(arr[i],arr[arr.length-1])){
+							arr.length--;
+						}
 					}
 				}
-			}
-			if(areSymmetric(arr[i],arr[i+1])){
-				arr[i+1]=arr[arr.length-1];
-				arr.length--;
-				if(areSymmetric(arr[i],arr[i+2])){
-					arr[i+2]=arr[arr.length-1];
+				if(areSymmetric(arr[i],arr[i+1])){
+					arr[i+1]=arr[arr.length-1];
 					arr.length--;
-					if(areSymmetric(arr[i],arr[i+3])){
-						arr[i+3]=arr[arr.length-1];
+					if(areSymmetric(arr[i],arr[i+2])){
+						arr[i+2]=arr[arr.length-1];
 						arr.length--;
+						if(areSymmetric(arr[i],arr[i+3])){
+							arr[i+3]=arr[arr.length-1];
+							arr.length--;
+						}
 					}
 				}
 			}
@@ -131,20 +133,20 @@ function reduceCandidatePointsWithWeight(arr,minLinks,maxD){
 			i--;
 		}
 	}
-
 }
 
 
-function reduceCandidatePoints(arr,minLinks,maxD){
+
+function reduceCandidatePoints(arr,minLinks,maxD,asymmetric){
 	var lengthBefore=arr.length;
 	var timeBefore=Date.now();
 
-	reduceCandidatePointsWithWeight(arr,minLinks,maxD);
+	reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric);
 
 	if(lengthBefore>arr.length){
 		logTimestamp("Граф урезан ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+arr.length);
 		serializeCandidatePoints(arr,minLinks+1,maxD);
-		reduceCandidatePoints(arr,minLinks,maxD);
+		reduceCandidatePoints(arr,minLinks,maxD,asymmetric);
 	}else{
 		logTimestamp("Холостой проход по графу ("+(Date.now() - timeBefore)+" мс)");
 	}
@@ -401,7 +403,7 @@ function processGraphIterated(cand,targetPow,maxD){
 function processGraph(cand,targetPow,maxD){
 	var firstX=separateX(cand);
 	reduceX(cand,firstX);
-	reduceCandidatePoints(cand,targetPow-1,maxD);
+	reduceCandidatePoints(cand,targetPow-1,maxD,true);
 	firstX=separateX(cand);
 
 	mapFriends(cand,maxD);
