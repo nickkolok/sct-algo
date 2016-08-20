@@ -163,11 +163,11 @@ function reduceCandidatePoints(arr,minLinks,maxD,asymmetric){
 	reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric);
 
 	if(lengthBefore>arr.length){
-		logTimestamp("Граф урезан ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+arr.length);
+		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
 		serializeCandidatePoints(arr,minLinks+1,maxD);
 		reduceCandidatePoints(arr,minLinks,maxD,asymmetric);
 	}else{
-		logTimestamp("Холостой проход по графу ("+(Date.now() - timeBefore)+" мс)");
+		logTimestamp("Холостой проход по графу",timeBefore);
 	}
 }
 
