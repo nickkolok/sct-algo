@@ -9,6 +9,8 @@
 
 node_modules
 dumps/*
+found/*
+states/*
 
 # Временные файлы мёржа
 *.orig
