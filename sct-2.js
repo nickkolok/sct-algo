@@ -12,9 +12,16 @@ function Point(x,y) {
 	this.weight=0;
 };
 
-var onSCTfound = function(){
+function emptyFunction(){
 }
 
+
+var handlers = {
+	onfound: emptyFunction, // Первая найденная СЦТ
+	onnotfound: emptyFunction, // Ни одной СЦТ не найдено
+	onfinished: emptyFunction, // Найдены СЦТ, расчёт завершён
+	ondumpsaved: emptyFunction, // Сохранён дамп
+};
 
 function calculateCandidatePoints(d){
 	var timeBefore=Date.now();
@@ -139,6 +146,7 @@ function serializeCandidatePoints(arr,pow,maxD){
 	var dumpName=pow+"_"+maxD+"_"+Date.now();
 	fs.writeFileSync("dumps/"+dumpName+".sct.json",JSON.stringify(arr));
 	console.log("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
+	handlers.ondumpsaved();
 }
 
 
@@ -427,18 +435,23 @@ function logSCT(arr,pow,maxD){
 		console.log('Не удалось записать найденную СЦТ в файл');
 	}
 	try{
-		onSCTfound(arr,pow,maxD);
+		handlers.onfound(arr,pow,maxD);
 	}catch(e){
 		console.log('Не удалось поднять флаг успешного нахождения');
 	}
 }
 
-function startSearch(p,d,onfound,onnotfound){
-	if(onfound)
-		onSCTfound = onfound;
+function startSearch(p,d,h){
+	for(var handler in h){
+		handlers[handler] = h[handler];
+	}
+
 	findSCTs(p,d);
-	if(onnotfound)
-		onnotfound();
+	if(!found){
+		handlers.onnotfound(p,d);
+	}else{
+		handlers.onfinished(p,d);
+	}
 }
 
 

@@ -27,7 +27,7 @@ var p=14;
 var d=90;
 while(d<95){
 	found=0;
-	solver.startSearch(p,d,onfound);
+	solver.startSearch(p,d,{onfound:onfound});
 	if(found){
 		p++;
 	} else {
