@@ -362,6 +362,7 @@ function processGraphIterated(cand,targetPow,maxD){
 
 	reduceCandidatePoints(cand,targetPow-1,maxD);
 
+	serializeCandidatePoints(cand,targetPow,maxD);
 	processGraphIterated(cand,targetPow,maxD);
 }
 
