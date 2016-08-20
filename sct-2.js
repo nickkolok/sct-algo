@@ -1,6 +1,6 @@
 var fs = require('fs');
 var ls = require('ls');
-
+var clc= require('cli-color');
 
 function dist(oV1, oV2) {
 	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
@@ -22,6 +22,19 @@ var handlers = {
 	onfinished: emptyFunction, // Найдены СЦТ, расчёт завершён
 	ondumpsaved: emptyFunction, // Сохранён дамп
 };
+
+var auxillary = 0;
+function logTimestamp(message,previousTime){
+	var now = new Date();
+	var rez = now.toISOString().replace("T",'  ').replace('Z','')+'   '+message;
+	if(previousTime){
+		rez+=' ('+(now-previousTime)+' мс)';
+	}
+	if(auxillary){
+		rez = clc.yellowBright(rez);
+	}
+	console.log(rez);
+}
 
 function calculateCandidatePoints(d){
 	var timeBefore=Date.now();
@@ -65,7 +78,7 @@ function calculateCandidatePoints(d){
 
 
 
-	console.log("Массив точек-кандидатов составлен ("+(Date.now() - timeBefore)+" мс), всего точек: "+candidatePoints.length);
+	logTimestamp("Массив точек-кандидатов составлен, всего точек: "+candidatePoints.length, timeBefore);
 //	console.log(candidatePoints);
 	return candidatePoints;
 }
@@ -129,11 +142,11 @@ function reduceCandidatePoints(arr,minLinks,maxD){
 	reduceCandidatePointsWithWeight(arr,minLinks,maxD);
 
 	if(lengthBefore>arr.length){
-		console.log("Граф урезан ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+arr.length);
+		logTimestamp("Граф урезан ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+arr.length);
 		serializeCandidatePoints(arr,minLinks+1,maxD);
 		reduceCandidatePoints(arr,minLinks,maxD);
 	}else{
-		console.log("Холостой проход по графу ("+(Date.now() - timeBefore)+" мс)");
+		logTimestamp("Холостой проход по графу ("+(Date.now() - timeBefore)+" мс)");
 	}
 }
 
@@ -145,7 +158,7 @@ function serializeCandidatePoints(arr,pow,maxD){
 	var timeBefore=Date.now();
 	var dumpName=pow+"_"+maxD+"_"+Date.now();
 	fs.writeFileSync("dumps/"+dumpName+".sct.json",JSON.stringify(arr));
-	console.log("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
+	logTimestamp("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
 	handlers.ondumpsaved();
 }
 
@@ -154,7 +167,7 @@ function deserializeCandidatePoints(pow,maxD,twice){
 	var dumps = ls('dumps/'+pow+'_'+maxD+'_*.sct.json');
 	if(!dumps.length){
 		// Нет нужного дампа
-		console.log('Дамп для мощности '+pow+' и основания  '+maxD+' не найден');
+		logTimestamp('Дамп для мощности '+pow+' и основания  '+maxD+' не найден');
 		if(twice){
 			return false;
 		}
@@ -162,10 +175,12 @@ function deserializeCandidatePoints(pow,maxD,twice){
 	}
 	var dump = dumps[dumps.length-1].full;
 	try{
-		console.log('Найден дамп '+dump);
-		return JSON.parse(fs.readFileSync(dump,'utf-8'));
+		logTimestamp('Найден дамп '+dump);
+		var rez = JSON.parse(fs.readFileSync(dump,'utf-8'));
+		logTimestamp('Дамп '+dump+' прочитан, точек: '+rez.length);
+		return rez;
 	}catch(e){
-		console.log('Ошибка при чтении дампа '+dump);
+		logTimestamp('Ошибка при чтении дампа '+dump);
 		return false;
 	}
 }
@@ -319,7 +334,7 @@ function reduceX(cand,firstX){
 		}
 	}
 
-	console.log("Удаление осевых точек ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+cand.length+", неосевых "+firstX);
+	logTimestamp("Удаление осевых точек: было "+lengthBefore+", стало "+cand.length+", неосевых "+firstX, timeBefore);
 }
 
 function getCandidatePoints(targetPow, maxD){
@@ -331,14 +346,15 @@ function getCandidatePoints(targetPow, maxD){
 }
 
 function findSCTs(targetPow,maxD){
-	console.log('Ищем СЦТ мощности '+targetPow+' с основанием '+maxD);
+	console.log('\n\n');
+	logTimestamp('Ищем СЦТ мощности '+targetPow+' с основанием '+maxD);
 	var t=new Date().getTime();
 	var cand=getCandidatePoints(targetPow, maxD);
 	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
 		processGraphIterated(cand,targetPow,maxD);
 	}
-	console.log('Времени затрачено, мс: '+(new Date().getTime()-t));
+	logTimestamp('Расчёт для мощности '+targetPow+' и основания '+maxD+' закончен',t);
 }
 
 function selectFriends(arr,point,maxD){
@@ -366,9 +382,11 @@ function processGraphIterated(cand,targetPow,maxD){
 	var point = cand[0];
 	var candWith = selectFriends(cand,point,maxD);
 
+	auxillary = 1;
 	nodumpwrite = 1;
 	processGraph(candWith,targetPow,maxD);
 	nodumpwrite = found;
+	auxillary = 0;
 
 	removeSymmetric(cand,point);
 
@@ -422,22 +440,22 @@ function logSCT(arr,pow,maxD){
 	for(var i = 0; i < arr.length; i++){
 		rez += '( '+arr[i].x+' ; '+arr[i].y+' );  \t  ';
 	}
-	console.log(rez);
+	logTimestamp(clc.redBright(rez));
 	try{
 		found=1;
 	}catch(e){
-		console.log('Не удалось поднять флаг успешного нахождения');
+		logTimestamp('Не удалось поднять флаг успешного нахождения');
 	}
 	try{
 		var dumpName=pow+"_"+maxD+"_"+Date.now();
 		fs.writeFileSync("found/"+dumpName+".sct.json",JSON.stringify(arr));
 	}catch(e){
-		console.log('Не удалось записать найденную СЦТ в файл');
+		logTimestamp('Не удалось записать найденную СЦТ в файл');
 	}
 	try{
 		handlers.onfound(arr,pow,maxD);
 	}catch(e){
-		console.log('Не удалось поднять флаг успешного нахождения');
+		logTimestamp('Не удалось поднять флаг успешного нахождения');
 	}
 }
 
