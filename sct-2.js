@@ -344,6 +344,7 @@ function selectFriends(arr,point,maxD){
 }
 
 var nodumpwrite = 0;
+var found=0;
 
 function processGraphIterated(cand,targetPow,maxD){
 	if(cand.length < targetPow - 2){
@@ -441,37 +442,4 @@ function startSearch(p,d,onfound,onnotfound){
 }
 
 
-
-
-/*
-3 1
-4 4
-5 7
-6 8
-7 17
-8 24
-9 26..35
-
-34 553
-*/
-/*
-findSCTs(4,5);
-*/
-
-var found=0;
-//var p=44;
-//var d=964;
-var p=3;
-var d=1;
-while(d<92){
-	found=0;
-	findSCTs(p,d);
-	if(found){
-		p++;
-	} else {
-		d++;
-	}
-}
-
 module.exports.startSearch = startSearch;
-
