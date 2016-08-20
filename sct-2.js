@@ -355,6 +355,7 @@ function getCandidatePoints(targetPow, maxD){
 }
 
 function findSCTs(targetPow,maxD){
+	found = 0;
 	console.log('\n\n');
 	logTimestamp('Ищем СЦТ мощности '+targetPow+' с основанием '+maxD);
 	var t=new Date().getTime();
