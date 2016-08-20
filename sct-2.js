@@ -120,9 +120,7 @@ function reduceCandidatePoints(arr,minLinks,maxD){
 
 	if(lengthBefore>arr.length){
 		console.log("Граф урезан ("+(Date.now() - timeBefore)+" мс): было "+lengthBefore+", стало "+arr.length);
-		if(!found && minLinks >= 12){
-			serializeCandidatePoints(arr,minLinks+1,maxD);
-		}
+		serializeCandidatePoints(arr,minLinks+1,maxD);
 		reduceCandidatePoints(arr,minLinks,maxD);
 	}else{
 		console.log("Холостой проход по графу ("+(Date.now() - timeBefore)+" мс)");
@@ -131,6 +129,9 @@ function reduceCandidatePoints(arr,minLinks,maxD){
 
 
 function serializeCandidatePoints(arr,pow,maxD){
+	if(nodumpwrite || found || pow <= 12){
+		return;
+	}
 	var timeBefore=Date.now();
 	var dumpName=pow+"_"+maxD+"_"+Date.now();
 	fs.writeFileSync("dumps/"+dumpName+".sct.json",JSON.stringify(arr));
@@ -339,6 +340,7 @@ function selectFriends(arr,point,maxD){
 	return newarr;
 }
 
+var nodumpwrite = 0;
 
 function processGraphIterated(cand,targetPow,maxD){
 	if(cand.length < targetPow - 2){
@@ -352,8 +354,9 @@ function processGraphIterated(cand,targetPow,maxD){
 	var point = cand[0];
 	var candWith = selectFriends(cand,point,maxD);
 
-
+	nodumpwrite = 1;
 	processGraph(candWith,targetPow,maxD);
+	nodumpwrite = found;
 
 	removeSymmetric(cand,point);
 
