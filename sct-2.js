@@ -91,6 +91,25 @@ function areSymmetric(a,b,maxD){
 	;
 }
 
+
+function mapFriendsCount(arr,maxD){
+
+	for(var i=0; i<arr.length; i++){
+		arr[i].friendsCount = 0;
+	}
+
+	for(var i=0; i<arr.length; i++){
+		for(var j=i+1; j<arr.length; j++){
+			if(areFriends(arr[i],arr[j],maxD)){
+				arr[i].friendsCount++;
+				arr[j].friendsCount++;
+			}
+		}
+	}
+}
+
+
+
 function reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric){
 	var m=minLinks-2;//Две неучтённых на основание
 
@@ -381,16 +400,23 @@ function processGraphIterated(cand,targetPow,maxD){
 		return;
 	}
 
+	// Точку с наименьшим количеством соседей ставим первой и изучаем
+	mapFriendsCount(cand,maxD);
+	sortByFriendsCount(cand);
+
 	var point = cand[0];
 	var candWith = selectFriends(cand,point,maxD);
 
 	auxillary = 1;
 	nodumpwrite = 1;
+//	console.log(point);
+//	console.log(candWith);
 	processGraph(candWith,targetPow,maxD);
 	nodumpwrite = found;
 	auxillary = 0;
 
 	removeSymmetric(cand,point);
+//	cand.splice(0,1);
 
 	reduceCandidatePoints(cand,targetPow-1,maxD);
 
@@ -472,6 +498,17 @@ function startSearch(p,d,h){
 	}else{
 		handlers.onfinished(p,d);
 	}
+}
+
+
+function sortByFriendsCount(arr){
+	arr.sort(function(p1,p2){
+		if(p1.x && !p2.x)
+			return -1;
+		if(!p1.x && p2.x)
+			return 1;
+		return p1.friendsCount - p2.friendsCount;
+	});
 }
 
 
