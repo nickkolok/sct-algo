@@ -176,7 +176,7 @@ function mapFriends(cand,maxD){
 function workWithSCT(arr,cand,candNums,targetPow,maxD,firstX){
 	if(arr.length>=targetPow){
 		if(isNotTrivial(arr)){
-			logSCT(arr);
+			logSCT(arr,targetPow,maxD);
 		}
 		return 1;
 	}
@@ -200,7 +200,7 @@ function workWithSCT(arr,cand,candNums,targetPow,maxD,firstX){
 			if(bGoodPoint){
 				arr.push(cand[last[j]]);
 				if(arr.length==targetPow){
-					logSCT(arr);
+					logSCT(arr,targetPow,maxD);
 					return 1;
 				}
 			}
@@ -405,7 +405,7 @@ function isNotTrivial(arr){
 	return 0;
 }
 
-function logSCT(arr){
+function logSCT(arr,pow,maxD){
 	var rez = '\n';
 	for(var i = 0; i < arr.length; i++){
 		rez += '( '+arr[i].x+' ; '+arr[i].y+' );  \t  ';
@@ -413,7 +413,14 @@ function logSCT(arr){
 	console.log(rez);
 	try{
 		found=1;
-	}catch(e){}
+	}catch(e){
+		console.log('Не удалось поднять флаг успешного нахождения');
+	}
+	try{
+		var dumpName=pow+"_"+maxD+"_"+Date.now();
+		fs.writeFileSync("found/"+dumpName+".sct.json",JSON.stringify(arr));
+	}catch(e){
+	}
 }
 
 /*
