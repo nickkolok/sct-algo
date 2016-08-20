@@ -12,6 +12,9 @@ function Point(x,y) {
 	this.weight=0;
 };
 
+var onSCTfound = function(){
+}
+
 
 function calculateCandidatePoints(d){
 	var timeBefore=Date.now();
@@ -420,8 +423,25 @@ function logSCT(arr,pow,maxD){
 		var dumpName=pow+"_"+maxD+"_"+Date.now();
 		fs.writeFileSync("found/"+dumpName+".sct.json",JSON.stringify(arr));
 	}catch(e){
+		console.log('Не удалось записать найденную СЦТ в файл');
+	}
+	try{
+		onSCTfound(arr,pow,maxD);
+	}catch(e){
+		console.log('Не удалось поднять флаг успешного нахождения');
 	}
 }
+
+function startSearch(p,d,onfound,onnotfound){
+	if(onfound)
+		onSCTfound = onfound;
+	findSCTs(p,d);
+	if(onnotfound)
+		onnotfound();
+}
+
+
+
 
 /*
 3 1
@@ -452,4 +472,6 @@ while(d<92){
 		d++;
 	}
 }
+
+module.exports.startSearch = startSearch;
 
