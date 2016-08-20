@@ -137,12 +137,16 @@ function serializeCandidatePoints(arr,pow,maxD){
 	console.log("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
 }
 
-function deserializeCandidatePoints(pow,maxD){
+
+function deserializeCandidatePoints(pow,maxD,twice){
 	var dumps = ls('dumps/'+pow+'_'+maxD+'_*.sct.json');
 	if(!dumps.length){
 		// Нет нужного дампа
-		console.log('Дамп для мощности '+pow+' и диаметра '+maxD+' не найден');
-		return false;
+		console.log('Дамп для мощности '+pow+' и основания  '+maxD+' не найден');
+		if(twice){
+			return false;
+		}
+		return deserializeCandidatePoints(pow-1,maxD,1);
 	}
 	var dump = dumps[dumps.length-1].full;
 	try{
