@@ -324,26 +324,14 @@ function separateX(cand){
 	return firstX;
 }
 
-function isFullSquare(n){
-  while(!(n & 3)){
-    n = n >> 2;
-  }
-  if((n & 7) != 1){
-    return false;
-  }
-  var s = Math.sqrt(n);
-  return s == Math.floor(s);
-
-}
-
-function reduceX(cand,firstX){
+function reduceX(cand,firstX,maxD){
 	var lengthBefore=cand.length;
 	var timeBefore=Date.now();
 
 	for(var i=firstX; i<cand.length; i++){
 		var fl=false;
 		for(var j=0; j<firstX; j++){
-			if(isFullSquare(Math.pow(cand[i].x-cand[j].x,2)+Math.pow(cand[i].y-cand[j].y,2))){
+			if(areFriends(cand[i],cand[j],maxD)){
 				fl=true;
 				break;
 			}
@@ -428,7 +416,7 @@ function processGraphIterated(cand,targetPow,maxD){
 
 function processGraph(cand,targetPow,maxD){
 	var firstX=separateX(cand);
-	reduceX(cand,firstX);
+	reduceX(cand,firstX,maxD);
 	reduceCandidatePoints(cand,targetPow-1,maxD,true);
 	firstX=separateX(cand);
 
