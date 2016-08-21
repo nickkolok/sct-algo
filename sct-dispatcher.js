@@ -1,6 +1,6 @@
 var fs = require('fs');
 var ls = require('ls');
-var childProcess=require('child_process');
+var child_process=require('child_process');
 
 
 const // Статусы процессов
@@ -16,15 +16,18 @@ const // Статусы процессов
 var state;
 
 function translateProcessStatus(proc){
+	if(!proc)
+		return undefined;
 	return [0,1,undefined,6,undefined,5,6][proc.status];
 }
 
-function Counter (){
-	this.status = undefined;
+function Counter (status){
+	this.status = status;
 	this.process = null;
 }
 
 function generateEmptyState(){
+	state = [];
 	for(var p = 3; p<200; p++){
 		state[p]=[];
 	}
@@ -34,12 +37,12 @@ function saveState() {
 	var savedState = [];
 	for(var i = 0; i < state.length; i++){
 		savedState[i]=[];
-		for(var j = 0; j < state[i].length; j++){
+		for(var j = 0; state[i] && j < state[i].length; j++){
 			savedState[i][j] = translateProcessStatus(state[i][j]);
 		}
 	}
 	var stateName = Date.now();
-	fs.writeFileSync("states/"+stateNameName+".state.json",JSON.stringify(savedState));
+	fs.writeFileSync("states/"+stateName+".state.json",JSON.stringify(savedState));
 }
 
 function loadState() {
@@ -52,10 +55,16 @@ function loadState() {
 	}
 	var st = states[states.length-1].full;
 	try{
-		state = JSON.parse(fs.readFileSync(st,'utf-8'));
+		var brief = JSON.parse(fs.readFileSync(st,'utf-8'));
+		for(var i = 0; i<brief.length; i++){
+			for(var j = 0; j<brief[i].length; j++){
+				state[i][j]=new Counter(brief[i][j]);
+			}
+		}
 	}catch(e){
 		console.log('Не удалось прочитать сохранённое состояние');
 	}
+
 }
 
 function isStatusKillable(status){
@@ -75,20 +84,20 @@ function isProcessKillable(pow,diam){
 }
 
 function isStatusRunnable(status){
-	return
+	return (
 		status == undefined
 	||
 		status == null
 	||
-		status == STOPPED_FOUND;
+		status == STOPPED_FOUND
+	);
 }
 
 function isProcessRunnable(pow,diam){
-	return state[pow][diam] && isStatusRunnable(state[pow][diam].status)
+	return state[pow][diam] && isStatusRunnable(state[pow][diam].status);
 }
 
 
-var freeThreads = 3; // Меняемо
 
 function killCounter(pow,diam){
 	try{
@@ -104,7 +113,7 @@ function killCounter(pow,diam){
 
 function killElder(pow,diam){
 	for(var i = diam + 1; i < state[pow].length; i++){
-		if(isProcessKillable(pow,diam){
+		if(isProcessKillable(pow,diam)){
 			state[pow][diam].status = PENDING_KILL;
 		}
 	}
@@ -112,15 +121,19 @@ function killElder(pow,diam){
 
 function runCounter(pow,diam){
 	try{
-		if(isProcessKillable(pow,diam)){
-			state[pow][diam].process = child_process.fork(__dirname + '/sct-runner.js', [pow,diam]);
-			children[i].on('message', receiveMessage); // Получили сообщение от процесса-потомка
+		if(isProcessRunnable(pow,diam)){
+			state[pow][diam].process = child_process.fork(__dirname + '/sct-runner.js', [pow,diam],{silent:true});
+			state[pow][diam].process.on('message', receiveMessage); // Получили сообщение от процесса-потомка
 
 			state[pow][diam].status = RUNNING_NOTFOUNDYET;
 			freeThreads--;
+			console.log('Запущен процесс '+pow+'_'+diam);
+		} else {
+			console.log('Невозможно запустить процесс '+pow+'_'+diam+', статус '+state[pow][diam].status);
 		}
 	}catch(e){
 		console.log('Не удалось запустить процесс '+pow+'_'+diam);
+		console.error(e);
 	}
 }
 
@@ -131,18 +144,22 @@ function runElder(pow,diam){
 }
 
 function receiveMessage (m) {
+	console.log('Принято сообщение от процесса '+m.power+'_'+m.diameter+':  '+JSON.stringify(m));
 	switch(m.type){
 		case 'found':
 			killElder(m.power,m.diameter);
+			state[m.power][m.diameter].status = RUNNING_FOUND;
 		break;
 		case 'finished':
 			freeThreads++;
+			state[m.power][m.diameter].status = FINISHED_FOUND;
 		break;
 		case 'notfound':
 			freeThreads++;
 			state[m.power][m.diameter].status = FINISHED_NOTFOUND;
 		break;
 		case 'step':
+//			console.log('Процесс '+m.power+'_'+m.diameter+' сообщает о промежуточном результате');
 			if(state[m.power][m.diameter].status == PENDING_KILL){
 			killProcess(m.power,m.diameter);
 				state[m.power][m.diameter].status = NOTNEEDED;
@@ -153,45 +170,54 @@ function receiveMessage (m) {
 	saveState();
 }
 
+function runNextCounter(pow,diam){
+	if(freeThreads <= 0){
+		return;
+	}
 
-/*
 
-	children[i] = childProcess.fork(__dirname + '/checkerProcess.js');
-
-
-
-for(var i=0; i<threads; i++){
-	children[i] = childProcess.fork(__dirname + '/checkerProcess.js');
-	children[i].on('message', function (m) { // Получили сообщение от процесса-потомка
-		switch(m.type){
-			case 'quantity':
-				totalQuantity+=m.quantity;
-				childrenFinished++;
-				if(childrenFinished==threads){
-					process.send({
-						type: 'quantity',
-						quantity: totalQuantity,
-					});
-					process.exit();
-				}
-			break;
-			case 'mistake':
-				process.send(m);
-			break;
+	pow || (pow = 3);
+	diam || (diam = 1);
+//	while(true){
+//		console.log('Ищем следующую итерацию:',pow,diam);
+		if(!state[pow]){
+			state[pow]=[];
 		}
-	});
+		if(!state[pow][diam]){
+			state[pow][diam] = new Counter();
+		}
+//		console.log(state[pow][diam].status);
+		if( // Если не найдено (неважно, процесс ещё запущен или уже отработал)
+			state[pow][diam].status == FINISHED_NOTFOUND
+		||
+			state[pow][diam].status == RUNNING_NOTFOUNDYET
+		){
+			diam++;
+		} else if( // Если найдено (неважно, процесс ещё запущен или уже отработал)
+			state[pow][diam].status == FINISHED_FOUND
+		||
+			state[pow][diam].status == RUNNING_FOUND
+		){
+			pow++;
+		} else if( // Если найдено, но до конца не доработало
+			state[pow][diam].status == STOPPED_FOUND
+		){
+			runCounter(pow,diam);
+			state[pow][diam].status = RUNNING_FOUND;
+		} else {
+			runCounter(pow,diam);
+			state[pow][diam].status = RUNNING_NOTFOUNDYET;
+		}
+//	}
+//	console.log(freeThreads);
+//	if(freeThreads > 0){
+		runNextCounter(pow,diam);
+//	}
 }
 
+var freeThreads = 3; // Меняемо
 
-child_process.fork(modulePath[, args][, options])#
+loadState();
+runNextCounter();
 
-Added in: v0.5.0
-modulePath <String> The module to run in the child
-args <Array> List of string arguments
-
-*/
-
-
-
-
-
+//console.log(isStatusRunnable(undefined));
