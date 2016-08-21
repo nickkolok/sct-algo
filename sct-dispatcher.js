@@ -3,6 +3,13 @@ var ls = require('ls');
 var child_process=require('child_process');
 
 
+function logTimestamp(message){
+	var now = new Date();
+	var rez = now.toISOString().replace("T",'  ').replace('Z','')+'   '+message;
+	console.log(rez);
+}
+
+
 const // Статусы процессов
 	FINISHED_NOTFOUND = 0,
 	FINISHED_FOUND = 1,
@@ -50,7 +57,7 @@ function loadState() {
 
 	var states = ls('states/*.state.json');
 	if(!states.length){
-		console.log('Сохранённое состояние не найдено');
+		logTimestamp('Сохранённое состояние не найдено');
 		return;
 	}
 	var st = states[states.length-1].full;
@@ -62,7 +69,7 @@ function loadState() {
 			}
 		}
 	}catch(e){
-		console.log('Не удалось прочитать сохранённое состояние');
+		logTimestamp('Не удалось прочитать сохранённое состояние');
 	}
 
 }
@@ -107,7 +114,7 @@ function killCounter(pow,diam){
 			freeThreads++;
 		}
 	}catch(e){
-		console.log('Не удалось остановить процесс '+pow+'_'+diam);
+		logTimestamp('Не удалось остановить процесс '+pow+'_'+diam);
 	}
 }
 
@@ -127,12 +134,12 @@ function runCounter(pow,diam){
 
 			state[pow][diam].status = RUNNING_NOTFOUNDYET;
 			freeThreads--;
-			console.log('Запущен процесс '+pow+'_'+diam);
+			logTimestamp('Запущен процесс '+pow+'_'+diam);
 		} else {
-			console.log('Невозможно запустить процесс '+pow+'_'+diam+', статус '+state[pow][diam].status);
+			logTimestamp('Невозможно запустить процесс '+pow+'_'+diam+', статус '+state[pow][diam].status);
 		}
 	}catch(e){
-		console.log('Не удалось запустить процесс '+pow+'_'+diam);
+		logTimestamp('Не удалось запустить процесс '+pow+'_'+diam);
 		console.error(e);
 	}
 }
@@ -144,7 +151,7 @@ function runElder(pow,diam){
 }
 
 function receiveMessage (m) {
-	console.log('Принято сообщение от процесса '+m.power+'_'+m.diameter+':  '+JSON.stringify(m));
+	logTimestamp('Принято сообщение от процесса '+m.power+'_'+m.diameter+':  '+JSON.stringify(m));
 	switch(m.type){
 		case 'found':
 			killElder(m.power,m.diameter);
@@ -208,7 +215,7 @@ function runNextCounter(pow,diam){
 }
 
 var freeThreads = process.argv[2] || require('os').cpus().length;
-console.log('Параллельных процессов: '+freeThreads);
+logTimestamp('Параллельных процессов: '+freeThreads);
 
 loadState();
 runNextCounter();
