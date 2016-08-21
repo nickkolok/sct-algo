@@ -40,23 +40,6 @@ function calculateCandidatePoints(d){
 	var timeBefore=Date.now();
 	var candidatePoints=[];
 
-	//Точки, которые по 4
-	var d2 = Math.pow(d,2);
-	for(var a=1; a<=d; a++){
-		// a < b
-		var a2 = Math.pow(a,2);
-		for(var b=Math.max(d-a,a)+1; b<=d; b++){
-			var y = (a2+d2 - Math.pow(b,2))/(2*d);
-			var x = Math.sqrt(a2-Math.pow(y,2));
-			candidatePoints.push(
-				new Point(x,y),
-				new Point(x,d-y),
-				new Point(-x,y),
-				new Point(-x,d-y)
-			);
-		}
-	}
-
 	// Точки, которые по 2
 	var y = d/2;
 	var y2 = Math.pow(y,2);
@@ -74,6 +57,23 @@ function calculateCandidatePoints(d){
 		candidatePoints.push(
 			new Point(0,a)
 		);
+	}
+
+	//Точки, которые по 4
+	var d2 = Math.pow(d,2);
+	for(var a=1; a<=d; a++){
+		// a < b
+		var a2 = Math.pow(a,2);
+		for(var b=Math.max(d-a,a)+1; b<=d; b++){
+			var y = (a2+d2 - Math.pow(b,2))/(2*d);
+			var x = Math.sqrt(a2-Math.pow(y,2));
+			candidatePoints.push(
+				new Point(x,y),
+				new Point(x,d-y),
+				new Point(-x,y),
+				new Point(-x,d-y)
+			);
+		}
 	}
 
 
@@ -217,18 +217,55 @@ function reduceCandidatePointsWithoutWeight(arr,minLinks,maxD,asymmetric){
 //	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
+function reduceCandidatePointsWithoutWeight4(arr,minLinks,maxD,first){
+	//{{ DEBUG
+//		var totalComparisons = 0;
+	//}} DEBUG
 
-function reduceCandidatePoints(arr,minLinks,maxD,asymmetric){
+	var m=minLinks-1;//Две неучтённых на основание плюс одна на себя
+
+	for(var i=first; i<arr.length; i+=4){
+		var links=arr[i].weight;
+
+		for(var j=0; j<arr.length; j++){
+//			totalComparisons++;
+			if(isZ(dist(arr[i],arr[j]))){
+				links++;
+//				totalComparisons++;
+				if(links >= m){
+					break;
+				}
+			}
+		}
+		if(links<m){
+			arr[i  ]=arr[arr.length-1];
+			arr[i+1]=arr[arr.length-2];
+			arr[i+2]=arr[arr.length-3];
+			arr[i+3]=arr[arr.length-4];
+			arr.length-=4;
+			i-=4;
+		}
+	}
+//	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
+}
+
+
+
+function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first){
 	var lengthBefore=arr.length;
 	var timeBefore=Date.now();
 
-	reduceCandidatePointsWithoutWeight(arr,minLinks,maxD,asymmetric);
+	if(group == 4){
+		reduceCandidatePointsWithoutWeight4(arr,minLinks,maxD,first);
+	} else {
+		reduceCandidatePointsWithoutWeight(arr,minLinks,maxD,asymmetric);
+	}
 //	reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric);
 
 	if(lengthBefore>arr.length){
 		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
 		serializeCandidatePoints(arr,minLinks+1,maxD);
-		reduceCandidatePoints(arr,minLinks,maxD,asymmetric);
+		reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first);
 	}else{
 		logTimestamp("Холостой проход по графу",timeBefore);
 	}
@@ -423,6 +460,7 @@ function findSCTs(targetPow,maxD){
 	logTimestamp('Ищем СЦТ мощности '+targetPow+' с основанием '+maxD);
 	var t=new Date().getTime();
 	var cand=getCandidatePoints(targetPow, maxD);
+	reduceCandidatePoints(cand,targetPow-1,maxD,false,4,maxD-1+2*Math.floor((maxD+1)/2));
 	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
 		processGraphIterated(cand,targetPow,maxD);
