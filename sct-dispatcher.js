@@ -159,7 +159,6 @@ function receiveMessage (m) {
 			state[m.power][m.diameter].status = FINISHED_NOTFOUND;
 		break;
 		case 'step':
-//			console.log('Процесс '+m.power+'_'+m.diameter+' сообщает о промежуточном результате');
 			if(state[m.power][m.diameter].status == PENDING_KILL){
 			killProcess(m.power,m.diameter);
 				state[m.power][m.diameter].status = NOTNEEDED;
@@ -178,46 +177,37 @@ function runNextCounter(pow,diam){
 
 	pow || (pow = 3);
 	diam || (diam = 1);
-//	while(true){
-//		console.log('Ищем следующую итерацию:',pow,diam);
-		if(!state[pow]){
-			state[pow]=[];
-		}
-		if(!state[pow][diam]){
-			state[pow][diam] = new Counter();
-		}
-//		console.log(state[pow][diam].status);
-		if( // Если не найдено (неважно, процесс ещё запущен или уже отработал)
-			state[pow][diam].status == FINISHED_NOTFOUND
-		||
-			state[pow][diam].status == RUNNING_NOTFOUNDYET
-		){
-			diam++;
-		} else if( // Если найдено (неважно, процесс ещё запущен или уже отработал)
-			state[pow][diam].status == FINISHED_FOUND
-		||
-			state[pow][diam].status == RUNNING_FOUND
-		){
-			pow++;
-		} else if( // Если найдено, но до конца не доработало
-			state[pow][diam].status == STOPPED_FOUND
-		){
-			runCounter(pow,diam);
-			state[pow][diam].status = RUNNING_FOUND;
-		} else {
-			runCounter(pow,diam);
-			state[pow][diam].status = RUNNING_NOTFOUNDYET;
-		}
-//	}
-//	console.log(freeThreads);
-//	if(freeThreads > 0){
-		runNextCounter(pow,diam);
-//	}
+	if(!state[pow]){
+		state[pow]=[];
+	}
+	if(!state[pow][diam]){
+		state[pow][diam] = new Counter();
+	}
+	if( // Если не найдено (неважно, процесс ещё запущен или уже отработал)
+		state[pow][diam].status == FINISHED_NOTFOUND
+	||
+		state[pow][diam].status == RUNNING_NOTFOUNDYET
+	){
+		diam++;
+	} else if( // Если найдено (неважно, процесс ещё запущен или уже отработал)
+		state[pow][diam].status == FINISHED_FOUND
+	||
+		state[pow][diam].status == RUNNING_FOUND
+	){
+		pow++;
+	} else if( // Если найдено, но до конца не доработало
+		state[pow][diam].status == STOPPED_FOUND
+	){
+		runCounter(pow,diam);
+		state[pow][diam].status = RUNNING_FOUND;
+	} else {
+		runCounter(pow,diam);
+		state[pow][diam].status = RUNNING_NOTFOUNDYET;
+	}
+	runNextCounter(pow,diam);
 }
 
 var freeThreads = 3; // Меняемо
 
 loadState();
 runNextCounter();
-
-//console.log(isStatusRunnable(undefined));
