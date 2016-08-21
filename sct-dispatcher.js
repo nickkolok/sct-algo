@@ -207,7 +207,8 @@ function runNextCounter(pow,diam){
 	runNextCounter(pow,diam);
 }
 
-var freeThreads = 3; // Меняемо
+var freeThreads = process.argv[2] || require('os').cpus().length;
+console.log('Параллельных процессов: '+freeThreads);
 
 loadState();
 runNextCounter();
