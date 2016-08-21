@@ -111,6 +111,10 @@ function mapFriendsCount(arr,maxD){
 
 
 function reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric){
+	//{{ DEBUG
+		var totalComparisons = 0;
+	//}} DEBUG
+
 	var m=minLinks-2;//Две неучтённых на основание
 
 	for(var i=0; i<arr.length; i++){
@@ -118,6 +122,7 @@ function reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric){
 		arr[i].weight=0;
 
 		for(var j=i+1; j<arr.length; j++){
+			totalComparisons++;
 			if(isZ(dist(arr[i],arr[j]))){
 				links++;
 				arr[j].weight++;
@@ -152,15 +157,73 @@ function reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric){
 			i--;
 		}
 	}
+	logTimestamp('Сравнений при урезке (алгоритм с весами): '+totalComparisons);
 }
 
+
+function reduceCandidatePointsWithoutWeight(arr,minLinks,maxD,asymmetric){
+	//{{ DEBUG
+//		var totalComparisons = 0;
+	//}} DEBUG
+
+	var m=minLinks-1;//Две неучтённых на основание плюс одна на себя
+
+	for(var i=0; i<arr.length; i++){
+		var links=arr[i].weight;
+
+		for(var j=0; j<arr.length; j++){
+//			totalComparisons++;
+			if(isZ(dist(arr[i],arr[j]))){
+				links++;
+//				totalComparisons++;
+				if(links >= m){
+					break;
+				}
+			}
+		}
+		if(links<m){
+			if(!asymmetric){
+				if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+					arr.length--;
+					if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+						arr.length--;
+						if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+							arr.length--;
+						}
+					}
+				}
+				if(areSymmetric(arr[i],arr[i+1],maxD)){
+					arr[i+1]=arr[arr.length-1];
+					arr.length--;
+					if(areSymmetric(arr[i],arr[i+2],maxD)){
+						arr[i+2]=arr[arr.length-1];
+						arr.length--;
+						if(areSymmetric(arr[i],arr[i+3],maxD)){
+							arr[i+3]=arr[arr.length-1];
+							arr.length--;
+						}
+					}
+				}
+			}
+			arr[i]=arr[arr.length-1];
+			arr.length--;
+			i--;
+		} else if(!asymmetric){
+			while(i<arr.length && areSymmetric(arr[i],arr[i+1],maxD)){
+				i++;
+			}
+		}
+	}
+//	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
+}
 
 
 function reduceCandidatePoints(arr,minLinks,maxD,asymmetric){
 	var lengthBefore=arr.length;
 	var timeBefore=Date.now();
 
-	reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric);
+	reduceCandidatePointsWithoutWeight(arr,minLinks,maxD,asymmetric);
+//	reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric);
 
 	if(lengthBefore>arr.length){
 		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
