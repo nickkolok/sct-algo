@@ -20,5 +20,5 @@ solver.startSearch(targetPow,maxD,{
 	onfound: retranslator('found'),
 	onnotfound: retranslator('notfound'),
 	onfinished: retranslator('finished'),
-	onstep: retranslator('step'),
+	ondumpsaved: retranslator('step'),
 });
