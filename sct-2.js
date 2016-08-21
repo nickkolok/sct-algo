@@ -484,6 +484,7 @@ function startSearch(p,d,h){
 	findSCTs(p,d);
 	if(!found){
 		handlers.onnotfound(p,d);
+		serializeDump([],p,d); // Чтоб уж гвоздями!
 	}else{
 		handlers.onfinished(p,d);
 	}
