@@ -125,22 +125,22 @@ function reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric){
 		}
 		if(links<m){
 			if(!asymmetric){
-				if(areSymmetric(arr[i],arr[arr.length-1])){
+				if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
 					arr.length--;
-					if(areSymmetric(arr[i],arr[arr.length-1])){
+					if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
 						arr.length--;
-						if(areSymmetric(arr[i],arr[arr.length-1])){
+						if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
 							arr.length--;
 						}
 					}
 				}
-				if(areSymmetric(arr[i],arr[i+1])){
+				if(areSymmetric(arr[i],arr[i+1],maxD)){
 					arr[i+1]=arr[arr.length-1];
 					arr.length--;
-					if(areSymmetric(arr[i],arr[i+2])){
+					if(areSymmetric(arr[i],arr[i+2],maxD)){
 						arr[i+2]=arr[arr.length-1];
 						arr.length--;
-						if(areSymmetric(arr[i],arr[i+3])){
+						if(areSymmetric(arr[i],arr[i+3],maxD)){
 							arr[i+3]=arr[arr.length-1];
 							arr.length--;
 						}
