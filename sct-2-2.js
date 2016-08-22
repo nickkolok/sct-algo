@@ -266,8 +266,13 @@ function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first){
 	var lengthBefore=arr.length;
 	var timeBefore=Date.now();
 
+	reduce.setParams({
+//		asymmetric : asymmetric,
+		maxD : maxD,
+		first : first,
+	});
 	if(group == 4){
-		reduce.unweighted4(arr,minLinks,maxD,first);
+		reduce.unweighted4(arr,minLinks/*,maxD,first*/);
 	} else {
 		reduce.unweighted(arr,minLinks,maxD,asymmetric);
 	}

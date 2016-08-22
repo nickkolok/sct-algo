@@ -140,7 +140,7 @@ function unweighted(arr,minLinks,maxD,asymmetric){
 //	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
-function unweighted4(arr,minLinks,maxD,first){
+function unweighted4(arr,minLinks/*,maxD,first*/){
 	//{{ DEBUG
 //		var totalComparisons = 0;
 	//}} DEBUG
@@ -202,3 +202,38 @@ module.exports.weighted = weighted;
 //module.exports.general = general;
 module.exports.unweighted = unweighted;
 module.exports.unweighted4 = unweighted4;
+
+var
+	first,maxD,asymmetric,
+	power,diameter,diameterE,
+	points,
+	symmetric,virgin,
+	first4,first2,
+	onstep
+;
+
+
+function setParams(p){
+	maxD = p.maxD;
+	first = p.first;
+
+
+	power = p.power;
+
+	diameter = p.diameter;
+//	diameterE = diameter + epsilon;
+
+	points = p.points;
+	symmetric = p.symmetric;
+
+	virgin = p.virgin; // Устанавливается для только что сгенерированного графа
+	if(virgin){
+		first4 = diameter-1+2*Math.floor((diameter+1)/2);
+		first2 = diameter % 2;
+	}
+
+	onstep = p.onstep; // Функция, выполняемая после каждого шага
+
+}
+module.exports.setParams = setParams;
+
