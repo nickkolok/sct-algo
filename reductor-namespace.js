@@ -175,34 +175,7 @@ function unweighted4(){
 //	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
-/*
-
-function general(arr,minLinks,diameter,asymmetric,group,first){
-	var lengthBefore=arr.length;
-	var timeBefore=Date.now();
-
-	if(group == 4){
-		unweighted4(arr,minLinks,diameter,first);
-	} else {
-		unweighted(arr,minLinks,diameter,asymmetric);
-	}
-//	reduceCandidatePointsWithWeight(arr,minLinks,diameter,asymmetric);
-
-	if(lengthBefore>arr.length){
-		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
-		serializeCandidatePoints(arr,minLinks+1,diameter);
-		general(arr,minLinks,diameter,asymmetric,group,first);
-	}else{
-		logTimestamp("Холостой проход по графу",timeBefore);
-	}
-}
-
-function setParams(p){
-	onstep = p.onstep;
-}
-*/
 module.exports.weighted = weighted;
-//module.exports.general = general;
 module.exports.unweighted = unweighted;
 module.exports.unweighted4 = unweighted4;
 
@@ -217,7 +190,6 @@ var
 
 
 function setParams(p){
-//	diameter = p.diameter;
 	first = p.first4;
 	asymmetric = p.asymmetric;
 
@@ -231,6 +203,7 @@ function setParams(p){
 	symmetric = p.symmetric;
 
 	virgin = p.virgin; // Устанавливается для только что сгенерированного графа
+
 	if(virgin){
 		first4 = diameter-1+2*Math.floor((diameter+1)/2);
 		first2 = diameter % 2;
