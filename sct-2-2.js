@@ -311,11 +311,14 @@ function reduceX(cand,firstX,maxD){
 	logTimestamp("Удаление осевых точек: было "+lengthBefore+", стало "+cand.length+", неосевых "+firstX, timeBefore);
 }
 
+var virginGraph = 1;
 function getCandidatePoints(targetPow, maxD){
 	var cand;
 	if(cand = deserializeCandidatePoints(targetPow,maxD)){
+		virginGraph = 0;
 		return cand;
 	}
+	virginGraph = 1;
 	return calculateCandidatePoints(maxD);
 }
 
