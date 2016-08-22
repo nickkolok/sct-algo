@@ -1,4 +1,4 @@
-const solver = require('./sct-2.js');
+const solver = require(process.argv[4] || './sct-2.js');
 
 const targetPow = process.argv[2];
 const maxD = process.argv[3];
