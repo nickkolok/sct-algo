@@ -3,7 +3,7 @@ function dist(oV1, oV2) {
 	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
 }
 
-function areSymmetric(a,b,diameter){
+function areSymmetric(a,b){
 	return a && b &&
 		(a.x==-b.x || a.x==b.x)
 	&&
@@ -16,7 +16,7 @@ function isZ(d){
 	return (d-Math.floor(d)<=1/1024/1024);
 }
 
-function areFriends(p1,p2,diameter){
+function areFriends(p1,p2){
 	var d = dist(p1,p2);
 	return (d<=diameter+1/1000000) && isZ(d);
 }
