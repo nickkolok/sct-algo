@@ -265,14 +265,88 @@ function separateX(cand){
 	return firstX;
 }
 
-function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first4){
+// Стадии редукции
+const
+	STAGE_VIRGIN = 0,
+	STAGE_STEP4 = 1,
+	STAGE_STEP2_SOFT = 2,
+	STAGE_STEP2_HARD = 3,
+	STAGE_STEP2X_SOFT = 4,
+	STAGE_STEP2X_HARD = 5,
+	STAGE_SYMMETRIC = 6,
+	STAGE_ASYMMETRIC = 7,
+	STAGE_COMPLETE = 8;
+
+function reduceNext(arr,minLinks,maxD,stage){
+
+	switch(stage){
+		case STAGE_VIRGIN:
+			reduce.setParams({
+				virgin : 1,
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+		//break;
+		case STAGE_STEP4:
+			// В любом случае пихаем в редуктор переданное
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			reduce.unweighted4();
+		break;
+		case STAGE_STEP2_SOFT:
+			//TODO
+		break;
+		case STAGE_STEP2_HARD:
+			// В любом случае пихаем в редуктор переданное
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			reduce.unweighted2hard();
+		break;
+		case STAGE_STEP2X_SOFT:
+			//TODO
+		break;
+		case STAGE_SYMMETRIC:
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			reduce.unweightedSymmetric();
+		break;
+		case STAGE_ASYMMETRIC:
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			reduce.unweightedAsymmetric();
+		break;
+	}
+
+
+}
+
+
+function reduceCandidatePoints(arr,minLinks,maxD,stage/*asymmetric,group,first4*/){
+	if(stage == STAGE_COMPLETE){
+		return;
+	}
 	var lengthBefore=arr.length;
 	var timeBefore=Date.now();
+	reduceNext(arr,minLinks,maxD,stage);
 
+/*
 	reduce.setParams({
 		asymmetric : asymmetric,
 		diameter : maxD,
-		first4 : first4,
+//		first4 : first4,
 		virgin : virginGraph,
 		points : arr,
 		power : minLinks+1,
@@ -282,13 +356,14 @@ function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first4){
 	} else {
 		reduce.unweighted();
 	}
-
+*/
 	if(lengthBefore>arr.length){
 		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
 		serializeCandidatePoints(arr,minLinks+1,maxD);
-		reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first4);
+		reduceCandidatePoints(arr,minLinks,maxD,stage);
 	}else{
 		logTimestamp("Холостой проход по графу",timeBefore);
+		reduceCandidatePoints(arr,minLinks,maxD,stage+1);
 	}
 }
 
@@ -333,8 +408,8 @@ function findSCTs(targetPow,maxD){
 	logTimestamp('Ищем СЦТ мощности '+targetPow+' с основанием '+maxD);
 	var t=new Date().getTime();
 	var cand=getCandidatePoints(targetPow, maxD);
-	reduceCandidatePoints(cand,targetPow-1,maxD,false,4,maxD-1+2*Math.floor((maxD+1)/2));
-	reduceCandidatePoints(cand,targetPow-1,maxD);
+	reduceCandidatePoints(cand,targetPow-1,maxD,virginGraph?STAGE_VIRGIN:STAGE_SYMMETRIC);
+//	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
 		processGraphIterated(cand,targetPow,maxD);
 	}
@@ -381,7 +456,7 @@ function processGraphIterated(cand,targetPow,maxD){
 	removeSymmetric(cand,point);
 //	cand.splice(0,1);
 
-	reduceCandidatePoints(cand,targetPow-1,maxD);
+	reduceCandidatePoints(cand,targetPow-1,maxD,STAGE_SYMMETRIC);
 
 	serializeCandidatePoints(cand,targetPow,maxD);
 	processGraphIterated(cand,targetPow,maxD);
@@ -392,7 +467,7 @@ function processGraphIterated(cand,targetPow,maxD){
 function processGraph(cand,targetPow,maxD){
 	var firstX=separateX(cand);
 	reduceX(cand,firstX,maxD);
-	reduceCandidatePoints(cand,targetPow-1,maxD,true);
+	reduceCandidatePoints(cand,targetPow-1,maxD,STAGE_ASYMMETRIC);
 	firstX=separateX(cand);
 
 	mapFriends(cand,maxD);

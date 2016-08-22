@@ -89,42 +89,51 @@ function weighted(arr,minLinks,diameter,asymmetric){
 }
 
 
-function unweighted(){
+function unweightedSymmetric(){
 	for(var i=0; i<points.length; i++){
 		if(!isGoodPoint(points[i])){
-			if(!asymmetric){
+			if(areSymmetric(points[i],points[points.length-1],diameter)){
+				points.length--;
 				if(areSymmetric(points[i],points[points.length-1],diameter)){
 					points.length--;
 					if(areSymmetric(points[i],points[points.length-1],diameter)){
 						points.length--;
-						if(areSymmetric(points[i],points[points.length-1],diameter)){
-							points.length--;
-						}
 					}
 				}
-				if(areSymmetric(points[i],points[i+1],diameter)){
-					points[i+1]=points[points.length-1];
+			}
+			if(areSymmetric(points[i],points[i+1],diameter)){
+				points[i+1]=points[points.length-1];
+				points.length--;
+				if(areSymmetric(points[i],points[i+2],diameter)){
+					points[i+2]=points[points.length-1];
 					points.length--;
-					if(areSymmetric(points[i],points[i+2],diameter)){
-						points[i+2]=points[points.length-1];
+					if(areSymmetric(points[i],points[i+3],diameter)){
+						points[i+3]=points[points.length-1];
 						points.length--;
-						if(areSymmetric(points[i],points[i+3],diameter)){
-							points[i+3]=points[points.length-1];
-							points.length--;
-						}
 					}
 				}
 			}
 			points[i]=points[points.length-1];
 			points.length--;
 			i--;
-		} else if(!asymmetric){
+		} else {
 			while(i<points.length && areSymmetric(points[i],points[i+1],diameter)){
 				i++;
 			}
 		}
 	}
 }
+
+function unweightedAsymmetric(){
+	for(var i=0; i<points.length; i++){
+		if(!isGoodPoint(points[i])){
+			points[i]=points[points.length-1];
+			points.length--;
+			i--;
+		}
+	}
+}
+
 
 function isGoodPoint(point){
 	var m=power-2;//Две неучтённых на основание плюс одна на себя
@@ -166,8 +175,10 @@ function unweighted2hard(){
 
 
 module.exports.weighted = weighted;
-module.exports.unweighted = unweighted;
+module.exports.unweightedSymmetric = unweightedSymmetric;
+module.exports.unweightedAsymmetric = unweightedAsymmetric;
 module.exports.unweighted4 = unweighted4;
+module.exports.unweighted2hard = unweighted2hard;
 
 var
 	first,asymmetric,
@@ -180,10 +191,8 @@ var
 
 
 function setParams(p){
-	first4 = p.first4;
-	first2 = p.first2;
-	asymmetric = p.asymmetric;
-
+	(p.first4 === undefined) || (first4 = p.first4);
+	(p.first2 === undefined) || (first2 = p.first2);
 
 	power = p.power;
 
@@ -191,7 +200,6 @@ function setParams(p){
 	diameterE = diameter + epsilon;
 
 	points = p.points;
-	symmetric = p.symmetric;
 
 	virgin = p.virgin; // Устанавливается для только что сгенерированного графа
 
@@ -200,7 +208,7 @@ function setParams(p){
 		first2 || (first2 = diameter - 1);
 	}
 
-	onstep = p.onstep; // Функция, выполняемая после каждого шага
+//	onstep = p.onstep; // Функция, выполняемая после каждого шага
 
 }
 module.exports.setParams = setParams;
