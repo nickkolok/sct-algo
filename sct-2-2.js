@@ -271,11 +271,12 @@ function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first4){
 		diameter : maxD,
 		first4 : first4,
 		virgin : virginGraph,
+		points : arr,
 	});
 	if(group == 4){
-		reduce.unweighted4(arr,minLinks);
+		reduce.unweighted4(/*arr,*/minLinks);
 	} else {
-		reduce.unweighted(arr,minLinks,maxD,asymmetric);
+		reduce.unweighted(/*arr,*/minLinks,maxD,asymmetric);
 	}
 //	reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric);
 

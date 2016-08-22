@@ -13,7 +13,7 @@ function areSymmetric(a,b){
 
 
 function isZ(d){
-	return (d-Math.floor(d)<=epsilon);
+	return d-Math.floor(d)<=epsilon;
 }
 
 function areFriends(p1,p2){
@@ -87,19 +87,19 @@ function weighted(arr,minLinks,diameter,asymmetric){
 }
 
 
-function unweighted(arr,minLinks,diameter,asymmetric){
+function unweighted(/*points,*/minLinks,diameter,asymmetric){
 	//{{ DEBUG
 //		var totalComparisons = 0;
 	//}} DEBUG
 
 	var m=minLinks-1;//Две неучтённых на основание плюс одна на себя
 
-	for(var i=0; i<arr.length; i++){
-		var links=arr[i].weight;
+	for(var i=0; i<points.length; i++){
+		var links=points[i].weight;
 
-		for(var j=0; j<arr.length; j++){
+		for(var j=0; j<points.length; j++){
 //			totalComparisons++;
-			if(isZ(dist(arr[i],arr[j]))){
+			if(isZ(dist(points[i],points[j]))){
 				links++;
 //				totalComparisons++;
 				if(links >= m){
@@ -109,33 +109,33 @@ function unweighted(arr,minLinks,diameter,asymmetric){
 		}
 		if(links<m){
 			if(!asymmetric){
-				if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
-					arr.length--;
-					if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
-						arr.length--;
-						if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
-							arr.length--;
+				if(areSymmetric(points[i],points[points.length-1],diameter)){
+					points.length--;
+					if(areSymmetric(points[i],points[points.length-1],diameter)){
+						points.length--;
+						if(areSymmetric(points[i],points[points.length-1],diameter)){
+							points.length--;
 						}
 					}
 				}
-				if(areSymmetric(arr[i],arr[i+1],diameter)){
-					arr[i+1]=arr[arr.length-1];
-					arr.length--;
-					if(areSymmetric(arr[i],arr[i+2],diameter)){
-						arr[i+2]=arr[arr.length-1];
-						arr.length--;
-						if(areSymmetric(arr[i],arr[i+3],diameter)){
-							arr[i+3]=arr[arr.length-1];
-							arr.length--;
+				if(areSymmetric(points[i],points[i+1],diameter)){
+					points[i+1]=points[points.length-1];
+					points.length--;
+					if(areSymmetric(points[i],points[i+2],diameter)){
+						points[i+2]=points[points.length-1];
+						points.length--;
+						if(areSymmetric(points[i],points[i+3],diameter)){
+							points[i+3]=points[points.length-1];
+							points.length--;
 						}
 					}
 				}
 			}
-			arr[i]=arr[arr.length-1];
-			arr.length--;
+			points[i]=points[points.length-1];
+			points.length--;
 			i--;
 		} else if(!asymmetric){
-			while(i<arr.length && areSymmetric(arr[i],arr[i+1],diameter)){
+			while(i<points.length && areSymmetric(points[i],points[i+1],diameter)){
 				i++;
 			}
 		}
@@ -143,19 +143,19 @@ function unweighted(arr,minLinks,diameter,asymmetric){
 //	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
-function unweighted4(arr,minLinks/*,diameter,first*/){
+function unweighted4(/*points,*/minLinks/*,diameter,first*/){
 	//{{ DEBUG
 //		var totalComparisons = 0;
 	//}} DEBUG
 
 	var m=minLinks-1;//Две неучтённых на основание плюс одна на себя
 
-	for(var i=first; i<arr.length; i+=4){
+	for(var i=first; i<points.length; i+=4){
 		var links=0;
 
-		for(var j=0; j<arr.length; j++){
+		for(var j=0; j<points.length; j++){
 //			totalComparisons++;
-			if(isZ(dist(arr[i],arr[j]))){
+			if(isZ(dist(points[i],points[j]))){
 				links++;
 //				totalComparisons++;
 				if(links >= m){
@@ -164,11 +164,11 @@ function unweighted4(arr,minLinks/*,diameter,first*/){
 			}
 		}
 		if(links<m){
-			arr[i  ]=arr[arr.length-1];
-			arr[i+1]=arr[arr.length-2];
-			arr[i+2]=arr[arr.length-3];
-			arr[i+3]=arr[arr.length-4];
-			arr.length-=4;
+			points[i  ]=points[points.length-1];
+			points[i+1]=points[points.length-2];
+			points[i+2]=points[points.length-3];
+			points[i+3]=points[points.length-4];
+			points.length-=4;
 			i-=4;
 		}
 	}
