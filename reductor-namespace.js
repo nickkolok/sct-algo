@@ -87,12 +87,12 @@ function weighted(arr,minLinks,diameter,asymmetric){
 }
 
 
-function unweighted(/*points,*/minLinks,diameter,asymmetric){
+function unweighted(){
 	//{{ DEBUG
 //		var totalComparisons = 0;
 	//}} DEBUG
 
-	var m=minLinks-1;//Две неучтённых на основание плюс одна на себя
+	var m=power-2;//Две неучтённых на основание плюс одна на себя
 
 	for(var i=0; i<points.length; i++){
 		var links=points[i].weight;
@@ -143,12 +143,12 @@ function unweighted(/*points,*/minLinks,diameter,asymmetric){
 //	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
-function unweighted4(/*points,*/minLinks/*,diameter,first*/){
+function unweighted4(){
 	//{{ DEBUG
 //		var totalComparisons = 0;
 	//}} DEBUG
 
-	var m=minLinks-1;//Две неучтённых на основание плюс одна на себя
+	var m=power-2;//Две неучтённых на основание плюс одна на себя
 
 	for(var i=first; i<points.length; i+=4){
 		var links=0;
@@ -219,6 +219,7 @@ var
 function setParams(p){
 //	diameter = p.diameter;
 	first = p.first4;
+	asymmetric = p.asymmetric;
 
 
 	power = p.power;

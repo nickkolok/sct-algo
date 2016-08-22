@@ -267,18 +267,18 @@ function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first4){
 	var timeBefore=Date.now();
 
 	reduce.setParams({
-//		asymmetric : asymmetric,
+		asymmetric : asymmetric,
 		diameter : maxD,
 		first4 : first4,
 		virgin : virginGraph,
 		points : arr,
+		power : minLinks+1,
 	});
 	if(group == 4){
-		reduce.unweighted4(/*arr,*/minLinks);
+		reduce.unweighted4();
 	} else {
-		reduce.unweighted(/*arr,*/minLinks,maxD,asymmetric);
+		reduce.unweighted();
 	}
-//	reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric);
 
 	if(lengthBefore>arr.length){
 		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
