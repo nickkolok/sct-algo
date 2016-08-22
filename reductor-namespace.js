@@ -88,26 +88,8 @@ function weighted(arr,minLinks,diameter,asymmetric){
 
 
 function unweighted(){
-	//{{ DEBUG
-//		var totalComparisons = 0;
-	//}} DEBUG
-
-	var m=power-2;//Две неучтённых на основание плюс одна на себя
-
 	for(var i=0; i<points.length; i++){
-		var links=points[i].weight;
-
-		for(var j=0; j<points.length; j++){
-//			totalComparisons++;
-			if(isZ(dist(points[i],points[j]))){
-				links++;
-//				totalComparisons++;
-				if(links >= m){
-					break;
-				}
-			}
-		}
-		if(links<m){
+		if(!isGoodPoint(points[i])){
 			if(!asymmetric){
 				if(areSymmetric(points[i],points[points.length-1],diameter)){
 					points.length--;
@@ -143,27 +125,23 @@ function unweighted(){
 //	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
-function unweighted4(){
-	//{{ DEBUG
-//		var totalComparisons = 0;
-	//}} DEBUG
-
+function isGoodPoint(point){
 	var m=power-2;//Две неучтённых на основание плюс одна на себя
-
-	for(var i=first; i<points.length; i+=4){
-		var links=0;
-
-		for(var j=0; j<points.length; j++){
-//			totalComparisons++;
-			if(isZ(dist(points[i],points[j]))){
-				links++;
-//				totalComparisons++;
-				if(links >= m){
-					break;
-				}
+	var links=0;
+	for(var j=0; j<points.length; j++){
+		if(isZ(dist(point,points[j]))){
+			links++;
+			if(links >= m){
+				return true;
 			}
 		}
-		if(links<m){
+	}
+	return false;
+}
+
+function unweighted4(){
+	for(var i=first; i<points.length; i+=4){
+		if(!isGoodPoint(points[i])){
 			points[i  ]=points[points.length-1];
 			points[i+1]=points[points.length-2];
 			points[i+2]=points[points.length-3];
@@ -172,7 +150,6 @@ function unweighted4(){
 			i-=4;
 		}
 	}
-//	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
 module.exports.weighted = weighted;
