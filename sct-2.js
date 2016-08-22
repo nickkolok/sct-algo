@@ -311,8 +311,7 @@ function mapFriends(cand,maxD){
 		cand[i].friends=new Int8Array(cand.length);
 		cand[i].friendsNums=[];
 		for(var j=cand.length-1; j>i; j--){
-			var d=dist(cand[i],cand[j]);
-			if( (d<=maxD+1/1000000) && isZ(d) ){
+			if( areFriends(cand[i],cand[j],maxD) ){
 				cand[i].friends[j] = 1;
 				cand[i].friendsNums.unshift(j);
 			}
