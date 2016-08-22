@@ -1,3 +1,5 @@
+'use strict';
+
 //{{ Дубли
 function dist(oV1, oV2) {
 	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
@@ -122,7 +124,6 @@ function unweighted(){
 			}
 		}
 	}
-//	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
 function isGoodPoint(point){
