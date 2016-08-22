@@ -141,7 +141,7 @@ function isGoodPoint(point){
 }
 
 function unweighted4(){
-	for(var i=first; i<points.length; i+=4){
+	for(var i=first4; i<points.length; i+=4){
 		if(!isGoodPoint(points[i])){
 			points[i  ]=points[points.length-1];
 			points[i+1]=points[points.length-2];
@@ -152,6 +152,18 @@ function unweighted4(){
 		}
 	}
 }
+
+function unweighted2hard(){
+	for(var i=first2; i<points.length; i+=2){
+		if(!isGoodPoint(points[i])){
+			points[i  ]=points[points.length-1];
+			points[i+1]=points[points.length-2];
+			points.length-=2;
+			i-=2;
+		}
+	}
+}
+
 
 module.exports.weighted = weighted;
 module.exports.unweighted = unweighted;
@@ -168,7 +180,8 @@ var
 
 
 function setParams(p){
-	first = p.first4;
+	first4 = p.first4;
+	first2 = p.first2;
 	asymmetric = p.asymmetric;
 
 
@@ -183,8 +196,8 @@ function setParams(p){
 	virgin = p.virgin; // Устанавливается для только что сгенерированного графа
 
 	if(virgin){
-		first4 = diameter-1+2*Math.floor((diameter+1)/2);
-		first2 = diameter % 2;
+		first4 || (first4 = diameter - 1 + 2*Math.floor((diameter+1)/2));
+		first2 || (first2 = diameter - 1);
 	}
 
 	onstep = p.onstep; // Функция, выполняемая после каждого шага

@@ -43,6 +43,14 @@ function calculateCandidatePoints(d){
 	var timeBefore=Date.now();
 	var candidatePoints=[];
 
+	//Осевые точки
+
+	for(var a=1; a<d; a++){
+		candidatePoints.push(
+			new Point(0,a)
+		);
+	}
+
 	// Точки, которые по 2
 	var y = d/2;
 	var y2 = Math.pow(y,2);
@@ -54,13 +62,6 @@ function calculateCandidatePoints(d){
 		);
 	}
 
-	//Осевые точки
-
-	for(var a=1; a<d; a++){
-		candidatePoints.push(
-			new Point(0,a)
-		);
-	}
 
 	//Точки, которые по 4
 	var d2 = Math.pow(d,2);
