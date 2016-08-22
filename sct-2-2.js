@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var ls = require('ls');
 var clc= require('cli-color');
