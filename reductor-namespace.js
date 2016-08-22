@@ -1,6 +1,13 @@
 'use strict';
 
 //{{ Дубли
+function Point(x,y) {
+	this.x=x;
+	this.y=y;
+	this.weight=0;
+};
+
+
 function dist(oV1, oV2) {
 	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
 }
@@ -173,18 +180,61 @@ function unweighted2hard(){
 	}
 }
 
+var badPoint = new Point(Infinity,Infinity);
+
+function unweighted2soft(){
+	var firstBad;
+	for(var i=first2; i<first4-2;){
+		for(; i<first4-2; i+=2){
+			if(!isGoodPoint(points[i])){
+				// Первую найденную пару - просто запороть
+				points[i  ] = badPoint;
+				points[i+1] = badPoint;
+
+				// Мы злопамятные!
+				firstBad = i;
+				// Если вторая не найдётся - то и фиг с ней
+				i+=2;
+				break;
+			}
+		}
+		for(; i<first4; i+=2){
+			if(!isGoodPoint(points[i])){
+				// Заменяем на "хорошие" точки с конца
+				points[i  ] = points[first4-1];
+				points[i+1] = points[first4-2];
+
+				// Не забываем про запомненное
+				points[firstBad  ] = points[first4-3];
+				points[firstBad+1] = points[first4-4];
+
+				// Втыкаем в конец четвёрку
+				points[first4-1] = points[points.length-1];
+				points[first4-2] = points[points.length-2];
+				points[first4-3] = points[points.length-3];
+				points[first4-4] = points[points.length-4];
+
+				points.length-=4;
+				first4-=4;
+				i-=2;
+			}
+		}
+	}
+}
+
+
 
 module.exports.weighted = weighted;
 module.exports.unweightedSymmetric = unweightedSymmetric;
 module.exports.unweightedAsymmetric = unweightedAsymmetric;
 module.exports.unweighted4 = unweighted4;
 module.exports.unweighted2hard = unweighted2hard;
+module.exports.unweighted2soft = unweighted2soft;
 
 var
-	first,asymmetric,
 	power,diameter,diameterE,
 	points,
-	symmetric,virgin,
+	virgin,
 	first4,first2,
 	onstep
 ;
