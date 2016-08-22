@@ -262,17 +262,18 @@ function separateX(cand){
 	return firstX;
 }
 
-function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first){
+function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first4){
 	var lengthBefore=arr.length;
 	var timeBefore=Date.now();
 
 	reduce.setParams({
 //		asymmetric : asymmetric,
 		maxD : maxD,
-		first : first,
+		first4 : first4,
+		virgin : virginGraph,
 	});
 	if(group == 4){
-		reduce.unweighted4(arr,minLinks/*,maxD,first*/);
+		reduce.unweighted4(arr,minLinks);
 	} else {
 		reduce.unweighted(arr,minLinks,maxD,asymmetric);
 	}
@@ -281,7 +282,7 @@ function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first){
 	if(lengthBefore>arr.length){
 		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
 		serializeCandidatePoints(arr,minLinks+1,maxD);
-		reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first);
+		reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first4);
 	}else{
 		logTimestamp("Холостой проход по графу",timeBefore);
 	}

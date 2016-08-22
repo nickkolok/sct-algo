@@ -215,7 +215,7 @@ var
 
 function setParams(p){
 	maxD = p.maxD;
-	first = p.first;
+	first = p.first4;
 
 
 	power = p.power;
