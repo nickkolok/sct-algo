@@ -13,12 +13,12 @@ function areSymmetric(a,b){
 
 
 function isZ(d){
-	return (d-Math.floor(d)<=1/1024/1024);
+	return (d-Math.floor(d)<=epsilon);
 }
 
 function areFriends(p1,p2){
 	var d = dist(p1,p2);
-	return (d<=diameter+1/1000000) && isZ(d);
+	return (d<=diameterE) && isZ(d);
 }
 
 function removeSymmetric(arr,point){
@@ -33,6 +33,9 @@ function removeSymmetric(arr,point){
 
 //}}Дубли
 
+const epsilon = 1/1024/1024;
+
+// Deprecated. При необходимости использования - переписать без лишних параметров
 function weighted(arr,minLinks,diameter,asymmetric){
 	//{{ DEBUG
 		var totalComparisons = 0;
@@ -204,7 +207,7 @@ module.exports.unweighted = unweighted;
 module.exports.unweighted4 = unweighted4;
 
 var
-	first,diameter,asymmetric,
+	first,asymmetric,
 	power,diameter,diameterE,
 	points,
 	symmetric,virgin,
@@ -221,7 +224,7 @@ function setParams(p){
 	power = p.power;
 
 	diameter = p.diameter;
-//	diameterE = diameter + epsilon;
+	diameterE = diameter + epsilon;
 
 	points = p.points;
 	symmetric = p.symmetric;
