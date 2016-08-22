@@ -268,7 +268,7 @@ function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first4){
 
 	reduce.setParams({
 //		asymmetric : asymmetric,
-		maxD : maxD,
+		diameter : maxD,
 		first4 : first4,
 		virgin : virginGraph,
 	});

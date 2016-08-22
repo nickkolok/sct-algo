@@ -3,11 +3,11 @@ function dist(oV1, oV2) {
 	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
 }
 
-function areSymmetric(a,b,maxD){
+function areSymmetric(a,b,diameter){
 	return a && b &&
 		(a.x==-b.x || a.x==b.x)
 	&&
-		(a.y==b.y || a.y==maxD-b.y)
+		(a.y==b.y || a.y==diameter-b.y)
 	;
 }
 
@@ -16,9 +16,9 @@ function isZ(d){
 	return (d-Math.floor(d)<=1/1024/1024);
 }
 
-function areFriends(p1,p2,maxD){
+function areFriends(p1,p2,diameter){
 	var d = dist(p1,p2);
-	return (d<=maxD+1/1000000) && isZ(d);
+	return (d<=diameter+1/1000000) && isZ(d);
 }
 
 function removeSymmetric(arr,point){
@@ -33,7 +33,7 @@ function removeSymmetric(arr,point){
 
 //}}Дубли
 
-function weighted(arr,minLinks,maxD,asymmetric){
+function weighted(arr,minLinks,diameter,asymmetric){
 	//{{ DEBUG
 		var totalComparisons = 0;
 	//}} DEBUG
@@ -53,22 +53,22 @@ function weighted(arr,minLinks,maxD,asymmetric){
 		}
 		if(links<m){
 			if(!asymmetric){
-				if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+				if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
 					arr.length--;
-					if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+					if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
 						arr.length--;
-						if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+						if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
 							arr.length--;
 						}
 					}
 				}
-				if(areSymmetric(arr[i],arr[i+1],maxD)){
+				if(areSymmetric(arr[i],arr[i+1],diameter)){
 					arr[i+1]=arr[arr.length-1];
 					arr.length--;
-					if(areSymmetric(arr[i],arr[i+2],maxD)){
+					if(areSymmetric(arr[i],arr[i+2],diameter)){
 						arr[i+2]=arr[arr.length-1];
 						arr.length--;
-						if(areSymmetric(arr[i],arr[i+3],maxD)){
+						if(areSymmetric(arr[i],arr[i+3],diameter)){
 							arr[i+3]=arr[arr.length-1];
 							arr.length--;
 						}
@@ -84,7 +84,7 @@ function weighted(arr,minLinks,maxD,asymmetric){
 }
 
 
-function unweighted(arr,minLinks,maxD,asymmetric){
+function unweighted(arr,minLinks,diameter,asymmetric){
 	//{{ DEBUG
 //		var totalComparisons = 0;
 	//}} DEBUG
@@ -106,22 +106,22 @@ function unweighted(arr,minLinks,maxD,asymmetric){
 		}
 		if(links<m){
 			if(!asymmetric){
-				if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+				if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
 					arr.length--;
-					if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+					if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
 						arr.length--;
-						if(areSymmetric(arr[i],arr[arr.length-1],maxD)){
+						if(areSymmetric(arr[i],arr[arr.length-1],diameter)){
 							arr.length--;
 						}
 					}
 				}
-				if(areSymmetric(arr[i],arr[i+1],maxD)){
+				if(areSymmetric(arr[i],arr[i+1],diameter)){
 					arr[i+1]=arr[arr.length-1];
 					arr.length--;
-					if(areSymmetric(arr[i],arr[i+2],maxD)){
+					if(areSymmetric(arr[i],arr[i+2],diameter)){
 						arr[i+2]=arr[arr.length-1];
 						arr.length--;
-						if(areSymmetric(arr[i],arr[i+3],maxD)){
+						if(areSymmetric(arr[i],arr[i+3],diameter)){
 							arr[i+3]=arr[arr.length-1];
 							arr.length--;
 						}
@@ -132,7 +132,7 @@ function unweighted(arr,minLinks,maxD,asymmetric){
 			arr.length--;
 			i--;
 		} else if(!asymmetric){
-			while(i<arr.length && areSymmetric(arr[i],arr[i+1],maxD)){
+			while(i<arr.length && areSymmetric(arr[i],arr[i+1],diameter)){
 				i++;
 			}
 		}
@@ -140,7 +140,7 @@ function unweighted(arr,minLinks,maxD,asymmetric){
 //	logTimestamp('Сравнений при урезке (алгоритм без весов): '+totalComparisons);
 }
 
-function unweighted4(arr,minLinks/*,maxD,first*/){
+function unweighted4(arr,minLinks/*,diameter,first*/){
 	//{{ DEBUG
 //		var totalComparisons = 0;
 	//}} DEBUG
@@ -174,21 +174,21 @@ function unweighted4(arr,minLinks/*,maxD,first*/){
 
 /*
 
-function general(arr,minLinks,maxD,asymmetric,group,first){
+function general(arr,minLinks,diameter,asymmetric,group,first){
 	var lengthBefore=arr.length;
 	var timeBefore=Date.now();
 
 	if(group == 4){
-		unweighted4(arr,minLinks,maxD,first);
+		unweighted4(arr,minLinks,diameter,first);
 	} else {
-		unweighted(arr,minLinks,maxD,asymmetric);
+		unweighted(arr,minLinks,diameter,asymmetric);
 	}
-//	reduceCandidatePointsWithWeight(arr,minLinks,maxD,asymmetric);
+//	reduceCandidatePointsWithWeight(arr,minLinks,diameter,asymmetric);
 
 	if(lengthBefore>arr.length){
 		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
-		serializeCandidatePoints(arr,minLinks+1,maxD);
-		general(arr,minLinks,maxD,asymmetric,group,first);
+		serializeCandidatePoints(arr,minLinks+1,diameter);
+		general(arr,minLinks,diameter,asymmetric,group,first);
 	}else{
 		logTimestamp("Холостой проход по графу",timeBefore);
 	}
@@ -204,7 +204,7 @@ module.exports.unweighted = unweighted;
 module.exports.unweighted4 = unweighted4;
 
 var
-	first,maxD,asymmetric,
+	first,diameter,asymmetric,
 	power,diameter,diameterE,
 	points,
 	symmetric,virgin,
@@ -214,7 +214,7 @@ var
 
 
 function setParams(p){
-	maxD = p.maxD;
+//	diameter = p.diameter;
 	first = p.first4;
 
 
