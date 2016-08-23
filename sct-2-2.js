@@ -283,8 +283,10 @@ const
 	STAGE_STEP2_HARD = 4,
 	STAGE_STEP2X_HARD = 5,
 	STAGE_SYMMETRIC = 6,
-	STAGE_ASYMMETRIC = 7,
-	STAGE_COMPLETE = 8;
+	STAGE_SYMMETRIC_MEASURED = 6,
+	STAGE_ASYMMETRIC = 8,
+	STAGE_ASYMMETRIC_MEASURED = 9,
+	STAGE_COMPLETE = 10;
 
 function reduceNext(arr,minLinks,maxD,stage){
 
@@ -325,6 +327,7 @@ function reduceNext(arr,minLinks,maxD,stage){
 				points : arr,
 				power : minLinks+1,
 			});
+			logTimestamp('Урезаем граф жёсткими двойками...');
 			reduce.unweighted2hard();
 		break;
 		case STAGE_STEP2X_SOFT:
@@ -336,6 +339,12 @@ function reduceNext(arr,minLinks,maxD,stage){
 			});
 			logTimestamp('Урезаем граф мягкими осевыми двойками...');
 			reduce.unweighted2Xsoft();
+			logTimestamp('Урезаем граф четвёрками...');
+			reduce.unweighted4();
+			logTimestamp('Урезаем граф мягкими двойками...');
+			reduce.unweighted2soft();
+			logTimestamp('Урезаем граф четвёрками...');
+			reduce.unweighted4();
 		break;
 		case STAGE_STEP2X_HARD:
 			// В любом случае пихаем в редуктор переданное
@@ -353,7 +362,17 @@ function reduceNext(arr,minLinks,maxD,stage){
 				points : arr,
 				power : minLinks+1,
 			});
+			logTimestamp('Урезаем граф симметрично...');
 			reduce.unweightedSymmetric();
+		break;
+		case STAGE_SYMMETRIC_MEASURED:
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			logTimestamp('Урезаем граф симметрично со сравнением расстояний...');
+			reduce.unweightedSymmetricMeasured();
 		break;
 		case STAGE_ASYMMETRIC:
 			reduce.setParams({
@@ -361,7 +380,17 @@ function reduceNext(arr,minLinks,maxD,stage){
 				points : arr,
 				power : minLinks+1,
 			});
+			logTimestamp('Урезаем граф ассимметрично...');
 			reduce.unweightedAsymmetric();
+		break;
+		case STAGE_ASYMMETRIC_MEASURED:
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			logTimestamp('Урезаем граф ассимметрично со сравнением расстояний...');
+			reduce.unweightedAsymmetricMeasured();
 		break;
 	}
 

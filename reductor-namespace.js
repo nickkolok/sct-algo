@@ -143,12 +143,72 @@ function unweightedAsymmetric(){
 	}
 }
 
+function unweightedSymmetricMeasured(){
+	for(var i=0; i<points.length; i++){
+		if(!isGoodPointMeasured(points[i])){
+
+			if(areSymmetric(points[i],points[points.length-1])){
+				points.length--;
+				if(areSymmetric(points[i],points[points.length-1])){
+					points.length--;
+					if(areSymmetric(points[i],points[points.length-1])){
+						points.length--;
+					}
+				}
+			}
+			if(areSymmetric(points[i],points[i+1])){
+				points[i+1]=points[points.length-1];
+				points.length--;
+				if(areSymmetric(points[i],points[i+2])){
+					points[i+2]=points[points.length-1];
+					points.length--;
+					if(areSymmetric(points[i],points[i+3])){
+						points[i+3]=points[points.length-1];
+						points.length--;
+					}
+				}
+			}
+
+			points[i]=points[points.length-1];
+			points.length--;
+			i--;
+		} else {
+			while(i<points.length && areSymmetric(points[i],points[i+1],diameter)){
+				i++;
+			}
+		}
+	}
+}
+
+function unweightedAsymmetricMeasured(){
+	for(var i=0; i<points.length; i++){
+		if(!isGoodPointMeasured(points[i])){
+			points[i]=points[points.length-1];
+			points.length--;
+			i--;
+		}
+	}
+}
 
 function isGoodPoint(point){
 	var m=power-2;//Две неучтённых на основание плюс одна на себя
 	var links=0;
 	for(var j=0; j<points.length; j++){
 		if(isZ(dist(point,points[j]))){
+			links++;
+			if(links >= m){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function isGoodPointMeasured(point){
+	var m=power-2;//Две неучтённых на основание плюс одна на себя
+	var links=0;
+	for(var j=0; j<points.length; j++){
+		if(areFriends(point,points[j])){
 			links++;
 			if(links >= m){
 				return true;
@@ -325,6 +385,8 @@ function unweighted2Xsoft(){
 module.exports.weighted = weighted;
 module.exports.unweightedSymmetric = unweightedSymmetric;
 module.exports.unweightedAsymmetric = unweightedAsymmetric;
+module.exports.unweightedSymmetricMeasured = unweightedSymmetricMeasured;
+module.exports.unweightedAsymmetricMeasured = unweightedAsymmetricMeasured;
 module.exports.unweighted4 = unweighted4;
 module.exports.unweighted2hard = unweighted2hard;
 module.exports.unweighted2soft = unweighted2soft;
@@ -345,10 +407,10 @@ function setParams(p){
 	(p.first2  === undefined) || (first2  = p.first2 );
 	(p.first2X === undefined) || (first2X = p.first2X);
 
-	power = p.power;
+	power = +p.power;
 
-	diameter = p.diameter;
-	diameterE = diameter + epsilon;
+	diameter = +p.diameter;
+	diameterE = +diameter + epsilon;
 
 	points = p.points;
 
