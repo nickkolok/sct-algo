@@ -279,8 +279,8 @@ const
 	STAGE_VIRGIN = 0,
 	STAGE_STEP4 = 1,
 	STAGE_STEP2_SOFT = 2,
-	STAGE_STEP2_HARD = 3,
-	STAGE_STEP2X_SOFT = 4,
+	STAGE_STEP2X_SOFT = 3,
+	STAGE_STEP2_HARD = 4,
 	STAGE_STEP2X_HARD = 5,
 	STAGE_SYMMETRIC = 6,
 	STAGE_ASYMMETRIC = 7,
@@ -304,6 +304,7 @@ function reduceNext(arr,minLinks,maxD,stage){
 				points : arr,
 				power : minLinks+1,
 			});
+			logTimestamp('Урезаем граф четвёрками...');
 			reduce.unweighted4();
 		break;
 		case STAGE_STEP2_SOFT:
@@ -327,7 +328,24 @@ function reduceNext(arr,minLinks,maxD,stage){
 			reduce.unweighted2hard();
 		break;
 		case STAGE_STEP2X_SOFT:
-			//TODO
+			// В любом случае пихаем в редуктор переданное
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			logTimestamp('Урезаем граф мягкими осевыми двойками...');
+			reduce.unweighted2Xsoft();
+		break;
+		case STAGE_STEP2X_HARD:
+			// В любом случае пихаем в редуктор переданное
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			logTimestamp('Урезаем граф жёсткими осевыми двойками...');
+			reduce.unweighted2Xhard();
 		break;
 		case STAGE_SYMMETRIC:
 			reduce.setParams({
