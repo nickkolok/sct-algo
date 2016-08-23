@@ -45,9 +45,18 @@ function calculateCandidatePoints(d){
 
 	//Осевые точки
 
-	for(var a=1; a<d; a++){
+	// Если число чётное - добавляем серединку:
+	if(!(d%2)){
 		candidatePoints.push(
-			new Point(0,a)
+			new Point(0,d/2)
+		);
+	}
+
+	//Остальные осевые - симметричными парами
+	for(var a=1; a<d/2; a++){
+		candidatePoints.push(
+			new Point(0,a),
+			new Point(0,d-a)
 		);
 	}
 
