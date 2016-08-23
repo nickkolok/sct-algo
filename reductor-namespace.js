@@ -191,12 +191,11 @@ function unweightedAsymmetricMeasured(){
 }
 
 function isGoodPoint(point){
-	var m=power-2;//Две неучтённых на основание плюс одна на себя
 	var links=0;
 	for(var j=0; j<points.length; j++){
 		if(isZ(dist(point,points[j]))){
 			links++;
-			if(links >= m){
+			if(links >= minLinks){
 				return true;
 			}
 		}
@@ -205,12 +204,11 @@ function isGoodPoint(point){
 }
 
 function isGoodPointMeasured(point){
-	var m=power-2;//Две неучтённых на основание плюс одна на себя
 	var links=0;
 	for(var j=0; j<points.length; j++){
 		if(areFriends(point,points[j])){
 			links++;
-			if(links >= m){
+			if(links >= minLinks){
 				return true;
 			}
 		}
@@ -219,14 +217,13 @@ function isGoodPointMeasured(point){
 }
 
 function isGoodPointXVirgin(point){
-	var m=power-2;//Две неучтённых на основание плюс одна на себя
 	var links=0;
 
 	// Проходим по всем неосевым
 	for(var j=first2; j<points.length; j++){
 		if(isZ(dist(point,points[j]))){
 			links++;
-			if(links >= m){
+			if(links >= minLinks){
 				return true;
 			}
 		}
@@ -240,7 +237,7 @@ function isGoodPointXVirgin(point){
 	// Бежать по осевым не нужно - они и так все соседки
 	links += first2-1;
 
-	return links >= m;
+	return links >= minLinks;
 }
 
 
@@ -394,7 +391,7 @@ module.exports.unweighted2Xhard = unweighted2Xhard;
 module.exports.unweighted2Xsoft = unweighted2Xsoft;
 
 var
-	power,diameter,diameterE,
+	power,minLinks,diameter,diameterE,
 	points,
 	virgin,
 	first4,first2,first2X,
@@ -408,6 +405,7 @@ function setParams(p){
 	(p.first2X === undefined) || (first2X = p.first2X);
 
 	power = +p.power;
+	minLinks = +power - 2;
 
 	diameter = +p.diameter;
 	diameterE = +diameter + epsilon;
@@ -417,8 +415,8 @@ function setParams(p){
 	virgin = p.virgin; // Устанавливается для только что сгенерированного графа
 
 	if(virgin){
-		first4  || (first4 = diameter - 1 + 2*Math.floor((diameter+1)/2));
-		first2  || (first2 = diameter - 1);
+		first4  || (first4 = +diameter - 1 + 2*Math.floor((+diameter+1)/2));
+		first2  || (first2 = +diameter - 1);
 		first2X || (first2 = 1 - diameter % 2);
 	}
 
