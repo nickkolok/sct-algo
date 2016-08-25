@@ -70,7 +70,7 @@ $S = P \setminus \left( Q \cup P ''\right)$,
 Построим теперь граф $G$, вершины которого --- точки $P$;
 вершины являются смежными, если расстояние между ними есть целое число, не превосходящее $m$.
 
-На данном этапе задачу нельзя свести к задаче о клике:
+На данном этапе задачу нельзя свести к задаче о клике, решение которой описано, например, в [\cite{BronKerbosh}]:
 клика может оказаться подмножеством множества $Q$, а значит, и оси абсцисс, что не удовлетворяет условию задачи.
 
 С целью оптимизации дальнейшего перебора будем исключать вершины $P_j$ из графа по следующим правилам до тех пор, пока это возможно:
@@ -95,6 +95,8 @@ $S = P \setminus \left( Q \cup P ''\right)$,
 
 Очевидно, что рекурсия заканчивается либо в случае, когда подграф полностью лежит в множестве $Q$, либо в случае, когда количество вершин полученного подграфа не превосходит количества вершин искомого.
 
+
+! На самом деле тут ещё используется модифицированный алгоритм Брона-Кербоша [\cite{BronKerbosh}].
 
 
 
@@ -189,6 +191,16 @@ $S = P \setminus \left( Q \cup P ''\right)$,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+\newpage
+
+\addcontentsline{toc}{chapter}{\bibname}
+\begin{thebibliography}{99}
+
+\bibitem{BronKerbosh} Bron C., Kerbosh J. (1973), Algorithm 457 — Finding all cliques of an undirected graph, Comm. of ACM, 16, p. 575—577.
+
+\bibitem{Tomita} Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi (2006), The worst-case time complexity for generating all maximal cliques and computational experiments, Theoretical Computer Science, Vol 363, Issue 1, ISSN:0304-3975, p. 28-42.
+
+\end{thebibliography}
 
 
 
