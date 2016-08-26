@@ -27,16 +27,24 @@ var handlers = {
 };
 
 var auxillary = 0;
+var logstr = "";
 function logTimestamp(message,previousTime){
 	var now = new Date();
 	var rez = new Date(Date.now()+1000*60*60*3).toISOString().replace("T",'  ').replace('Z','')+'   '+message;
 	if(previousTime){
 		rez+=' ('+(now-previousTime)+' мс)';
 	}
+	logstr+=rez+"\n";
 	if(auxillary){
 		rez = clc.yellowBright(rez);
 	}
 	console.log(rez);
+}
+
+function writeLog(power,diameter){
+	var logName = power+"_"+diameter+"_"+Date.now();
+	fs.writeFileSync("logs/"+logName+".sct.json",logstr);
+
 }
 
 function calculateCandidatePoints(d){
@@ -470,6 +478,9 @@ function findSCTs(targetPow,maxD){
 	found = 0;
 	console.log('\n\n');
 	logTimestamp('Ищем СЦТ мощности '+targetPow+' с основанием '+maxD);
+	if(options.solver){
+		logTimestamp('Используется скрипт '+options.solver);
+	}
 	var t=new Date().getTime();
 	var cand=getCandidatePoints(targetPow, maxD);
 	reduceCandidatePoints(cand,targetPow-1,maxD,virginGraph?STAGE_VIRGIN:STAGE_SYMMETRIC);
@@ -609,6 +620,7 @@ function startSearch(p,d,h,opts){
 	}else{
 		handlers.onfinished(p,d);
 	}
+	writeLog(p,d);
 }
 
 
