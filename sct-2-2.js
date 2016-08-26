@@ -458,7 +458,7 @@ function reduceX(cand,firstX,maxD){
 var virginGraph = 1;
 function getCandidatePoints(targetPow, maxD){
 	var cand;
-	if(cand = deserializeCandidatePoints(targetPow,maxD)){
+	if(!options.nodumpload && (cand = deserializeCandidatePoints(targetPow,maxD))){
 		virginGraph = 0;
 		return cand;
 	}
@@ -589,9 +589,17 @@ function logSCT(arr,pow,maxD){
 	}
 }
 
-function startSearch(p,d,h){
+var options = {};
+
+function startSearch(p,d,h,opts){
 	for(var handler in h){
 		handlers[handler] = h[handler];
+	}
+
+	if(opts){
+		for(var opt in opts){
+			options[opt] = opts[opt];
+		}
 	}
 
 	findSCTs(p,d);
