@@ -128,7 +128,7 @@ function serializeCandidatePoints(arr,pow,maxD){
 		return;
 	}
 	var timeBefore=Date.now();
-	var dumpName=pow+"_"+maxD+"_"+Date.now();
+	var dumpName=pow+"_"+maxD+"_"+Date.now()+"_"+arr.length;
 	fs.writeFileSync("dumps/"+dumpName+".sct.json",JSON.stringify(arr));
 	logTimestamp("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
 	handlers.ondumpsaved();
