@@ -12,7 +12,7 @@ function dist(oV1, oV2) {
 function Point(x,y) {
 	this.x=x;
 	this.y=y;
-	this.weight=0;
+//	this.weight=0;
 };
 
 function emptyFunction(){
@@ -28,7 +28,7 @@ var handlers = {
 
 var auxillary = 0;
 function logTimestamp(message,previousTime){
-	var now = new Date();
+	var now = new Date(Date.now()+1000*60*60*3);
 	var rez = now.toISOString().replace("T",'  ').replace('Z','')+'   '+message;
 	if(previousTime){
 		rez+=' ('+(now-previousTime)+' мс)';
