@@ -37,8 +37,14 @@ d(A)=\max\limits_{x,y\in A}|x,y|
 $$
 
 В настоящей статье представлен алгоритм отыскания таких $A \in C_n$, что $d(A) = F(n)$.
+Аналитические ограничения на $F(n)$ были получены в \cite{nashaStatya}:
+для $n \geq 17$
+	$$
+		\max\left( \frac{n-5}{8}, 1 \right) \leq F(n) \leq \left( \frac{b (1+\log_2 n )\ln (1 + \log_2 n)}{e}\right)^{1+\log_2 n},
+	$$
+где $b$ --- константа из неравенств Чебышева.
 
-
+? Дать здесь ссылку на неравенства Чебышева?
 
 
 
@@ -202,6 +208,8 @@ $S = P \setminus \left( Q \cup R\right)$,
 
 \addcontentsline{toc}{chapter}{\bibname}
 \begin{thebibliography}{99}
+
+\bibitem{nashaStatya} Авдеев Н. Н., Семёнов Е. М. О множествах точек на плоскости с целочисленными расстояниями. --- в печати.
 
 \bibitem{BronKerbosh} Bron C., Kerbosh J. (1973), Algorithm 457 — Finding all cliques of an undirected graph, Comm. of ACM, 16, p. 575—577.
 
