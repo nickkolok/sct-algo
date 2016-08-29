@@ -43,7 +43,7 @@ function logTimestamp(message,previousTime){
 
 function writeLog(power,diameter){
 	var logName = power+"_"+diameter+"_"+Date.now();
-	fs.writeFileSync("logs/"+logName+".sct.json",logstr);
+	fs.writeFileSync("logs/"+logName+".sct.log",logstr);
 
 }
 
