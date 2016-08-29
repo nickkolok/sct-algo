@@ -9,6 +9,10 @@
 
 node_modules
 dumps/*
+dumps
+dumps.bak
+logs
+temp
 found/*
 states/*
 
