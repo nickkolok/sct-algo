@@ -527,7 +527,12 @@ function processGraphIterated(cand,targetPow,maxD){
 	sortByFriendsCount(cand);
 
 	var point = cand[0];
+
+//	console.log(point);
+
 	var candWith = selectFriends(cand,point,maxD);
+
+//	console.log(candWith);
 
 	auxillary = 1;
 	nodumpwrite = 1;
