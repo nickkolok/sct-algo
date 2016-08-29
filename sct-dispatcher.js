@@ -129,7 +129,7 @@ function killElder(pow,diam){
 function runCounter(pow,diam){
 	try{
 		if(isProcessRunnable(pow,diam)){
-			state[pow][diam].process = child_process.fork(__dirname + '/sct-runner.js', [pow,diam],{silent:true});
+			state[pow][diam].process = child_process.fork(__dirname + '/sct-runner.js', [pow,diam]/*,{silent:true}*/);
 			state[pow][diam].process.on('message', receiveMessage); // Получили сообщение от процесса-потомка
 
 			state[pow][diam].status = RUNNING_NOTFOUNDYET;
