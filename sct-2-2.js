@@ -5,15 +5,12 @@ var ls = require('ls');
 var clc= require('cli-color');
 var reduce = require('./reductor-namespace.js');
 
+const Point = require('./sct-common.js').Point;
+
 function dist(oV1, oV2) {
 	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
 }
 
-function Point(x,y) {
-	this.x=x;
-	this.y=y;
-//	this.weight=0;
-};
 
 function emptyFunction(){
 }

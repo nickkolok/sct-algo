@@ -1,11 +1,8 @@
 'use strict';
 
+const Point = require('./sct-common.js').Point;
+
 //{{ Дубли
-function Point(x,y) {
-	this.x=x;
-	this.y=y;
-//	this.weight=0;
-};
 
 
 function dist(oV1, oV2) {
