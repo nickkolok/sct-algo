@@ -134,7 +134,7 @@ function unweightedSymmetric(){
 			points.length--;
 			i--;
 		} else {
-			while(i<points.length && areSymmetric(points[i],points[i+1],diameter)){
+			while(i<points.length && areSymmetric(points[i],points[i+1])){
 				i++;
 			}
 		}
