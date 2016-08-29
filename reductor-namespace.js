@@ -101,29 +101,35 @@ function weighted(arr,minLinks,diameter,asymmetric){
 function unweightedSymmetric(){
 	for(var i=0; i<points.length; i++){
 		if(!isGoodPoint(points[i])){
-
-			if(areSymmetric(points[i],points[points.length-1])){
-				points.length--;
+			if(i<points.length-3){
+//				console.log("\n");
+//				console.log(points[i],links,i,points.length-1);
 				if(areSymmetric(points[i],points[points.length-1])){
+//					console.log('Под скрепочку:', points[points.length-1]);
 					points.length--;
 					if(areSymmetric(points[i],points[points.length-1])){
+//						console.log('Под скрепочку:', points[points.length-1]);
 						points.length--;
+						if(areSymmetric(points[i],points[points.length-1])){
+//							console.log('Под скрепочку:', points[points.length-1]);
+							points.length--;
+						}
 					}
 				}
-			}
-			if(areSymmetric(points[i],points[i+1])){
-				points[i+1]=points[points.length-1];
-				points.length--;
-				if(areSymmetric(points[i],points[i+2])){
-					points[i+2]=points[points.length-1];
-					points.length--;
-					if(areSymmetric(points[i],points[i+3])){
-						points[i+3]=points[points.length-1];
-						points.length--;
-					}
-				}
-			}
 
+				if(areSymmetric(points[i],points[i+1])){
+					points[i+1]=points[points.length-1];
+					points.length--;
+					if(areSymmetric(points[i],points[i+2])){
+						points[i+2]=points[points.length-1];
+						points.length--;
+						if(areSymmetric(points[i],points[i+3])){
+							points[i+3]=points[points.length-1];
+							points.length--;
+						}
+					}
+				}
+			}
 			points[i]=points[points.length-1];
 			points.length--;
 			i--;
