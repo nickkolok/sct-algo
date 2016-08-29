@@ -22,7 +22,7 @@ function areSymmetric(a,b){
 
 
 function isZ(d){
-	return d-Math.floor(d)<=epsilon;
+	return (d-Math.floor(d)<=epsilon) || (Math.ceil(d) - d <=epsilon);
 }
 
 function areFriends(p1,p2){
