@@ -256,6 +256,7 @@ function reduceCandidatePoints(arr,minLinks,maxD,asymmetric,group,first){
 	var timeBefore=Date.now();
 
 	if(group == 4){
+		logTimestamp('Урезка графа четвёрками...');
 		reduceCandidatePointsWithoutWeight4(arr,minLinks,maxD,first);
 	} else {
 		reduceCandidatePointsWithoutWeight(arr,minLinks,maxD,asymmetric);
