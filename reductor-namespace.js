@@ -198,14 +198,19 @@ function unweightedAsymmetricMeasured(){
 	}
 }
 
+//var links=0;
+
 function isGoodPoint(point){
-	var links=0;
+	var links = 0;
 	for(var j=0; j<points.length; j++){
 		if(isZ(dist(point,points[j]))){
+//			console.log(point,points[j],true);
 			links++;
 			if(links >= minLinks){
 				return true;
 			}
+//		} else {
+//			console.log(point,points[j],false, dist(point,points[j]), isZ(dist(point,points[j])));
 		}
 	}
 	return false;
@@ -250,8 +255,10 @@ function isGoodPointXVirgin(point){
 
 
 function unweighted4(){
+//	console.log(points);
 	for(var i=first4; i<points.length; i+=4){
 		if(!isGoodPoint(points[i])){
+//			console.log(points[i],links,minLinks,points.length);
 			points[i  ]=points[points.length-1];
 			points[i+1]=points[points.length-2];
 			points[i+2]=points[points.length-3];
@@ -413,7 +420,7 @@ function setParams(p){
 	(p.first2X === undefined) || (first2X = p.first2X);
 
 	power = +p.power;
-	minLinks = +power - 2;
+	minLinks = +power - 2/* - 1*/;
 
 	diameter = +p.diameter;
 	diameterE = +diameter + epsilon;
