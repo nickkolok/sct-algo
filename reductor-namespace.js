@@ -9,6 +9,11 @@ function dist(oV1, oV2) {
 	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
 }
 
+function distXY(x1,y1, oV2) {
+	return Math.sqrt((oV2.x - x1) * (oV2.x - x1) + (oV2.y - y1) * (oV2.y - y1));
+}
+
+
 function areSymmetric(a,b){
 	return a && b &&
 		(a.x==-b.x || a.x==b.x)
@@ -201,6 +206,21 @@ function isGoodPoint(point){
 	var links = 0;
 	for(var j=0; j<points.length; j++){
 		if(isZ(dist(point,points[j]))){
+			links++;
+			if(links >= minLinks){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*
+function isGoodPoint(point){
+	var links = 0;
+	const x = point.x, y = point.y;
+	for(var j=0; j<points.length; j++){
+		if(isZ(distXY(x,y,points[j]))){
 //			console.log(point,points[j],true);
 			links++;
 			if(links >= minLinks){
@@ -212,6 +232,47 @@ function isGoodPoint(point){
 	}
 	return false;
 }
+*/
+
+
+function areGoodPoints2(point1,point2){
+	var links1 = 0, links2 = 0;
+	for(var j=0; j<points.length; j++){
+		if(isZ(dist(point1,points[j]))){
+			links1++;
+			if(links1 >= minLinks){
+				break;
+			}
+		}
+		if(isZ(dist(point2,points[j]))){
+			links2++;
+			if(links2 >= minLinks){
+				break;
+			}
+		}
+	}
+	for(var j1 = j; j1<points.length; j1++){
+		if(isZ(dist(point1,points[j1]))){
+			links1++;
+			if(links1 >= minLinks){
+				break;
+			}
+		}
+	}
+	for(var j2 = j; j2<points.length; j2++){
+		if(isZ(dist(point2,points[j2]))){
+			links2++;
+			if(links2 >= minLinks){
+				break;
+			}
+		}
+	}
+	var rez = 0 + (+(links1 >= minLinks))+2*(links2 >= minLinks);
+	return rez;
+}
+
+
+
 
 function isGoodPointMeasured(point){
 	var links=0;
@@ -265,6 +326,41 @@ function unweighted4(){
 		}
 	}
 }
+
+function unweighted4g2(){
+//	console.log(points);
+	for(var i=first4; i<points.length-4; i+=8){
+		var rez = areGoodPoints2(points[i],points[i+4]);
+/*
+		if(rez & 1 != isGoodPoint(points[i])){
+			console.log(1);
+		}
+		if(rez & 2 < isGoodPoint(points[i+4])){
+			console.log(2);
+		}
+*/
+		var j = i;
+		if(!(rez & 1)){
+//			console.log(points[i],links,minLinks,points.length);
+			points[j  ]=points[points.length-1];
+			points[j+1]=points[points.length-2];
+			points[j+2]=points[points.length-3];
+			points[j+3]=points[points.length-4];
+			points.length-=4;
+			i-=4;
+		}
+		if(!(rez & 2)){
+//			console.log(points[i],links,minLinks,points.length);
+			points[j+4]=points[points.length-1];
+			points[j+5]=points[points.length-2];
+			points[j+6]=points[points.length-3];
+			points[j+7]=points[points.length-4];
+			points.length-=4;
+			i-=4;
+		}
+	}
+}
+
 
 function unweighted2hard(){
 	for(var i=first2; i<points.length; i+=2){
@@ -397,6 +493,7 @@ module.exports.unweightedAsymmetric = unweightedAsymmetric;
 module.exports.unweightedSymmetricMeasured = unweightedSymmetricMeasured;
 module.exports.unweightedAsymmetricMeasured = unweightedAsymmetricMeasured;
 module.exports.unweighted4 = unweighted4;
+module.exports.unweighted4g2 = unweighted4g2;
 module.exports.unweighted2hard = unweighted2hard;
 module.exports.unweighted2soft = unweighted2soft;
 module.exports.unweighted2Xhard = unweighted2Xhard;
