@@ -223,10 +223,17 @@ function workWithSCT(arr,cand,candNums,targetPow,maxD,firstX){
 	}
 }
 
+const epsilon = 1/1024/1024;
+function isZ(d){
+	return (d-Math.floor(d)<=epsilon) || (Math.ceil(d) - d <=epsilon);
+}
 
+
+/*
 function isZ(d){
 	return (d-Math.floor(d)<=1/1024/1024);
 }
+*/
 
 function generateArrayOfOnes(len){
 	var arr=new Int8Array(len);

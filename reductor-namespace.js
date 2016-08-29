@@ -23,6 +23,7 @@ function areSymmetric(a,b){
 
 function isZ(d){
 	return (d-Math.floor(d)<=epsilon) || (Math.ceil(d) - d <=epsilon);
+	// return Math.abs(d-Math.round(d)<=epsilon); // Значительно медленнее
 }
 
 function areFriends(p1,p2){
@@ -40,9 +41,10 @@ function removeSymmetric(arr,point){
 	}
 }
 
+const epsilon = 1/1024/1024;
+
 //}}Дубли
 
-const epsilon = 1/1024/1024;
 
 // Deprecated. При необходимости использования - переписать без лишних параметров
 function weighted(arr,minLinks,diameter,asymmetric){
