@@ -18,7 +18,7 @@ function createReaction(power,diameter,exists){
 	return function(message){
 		var text,color;
 		if(message.type==='finished'){
-			text = "СЦТ мощности "+power+"\t и диаметра "+diameter+"\t   найдена";
+			text = "СЦТ мощности "+power+"\t и диаметра "+diameter+"\t    найдена";
 			if(exists){
 				color = 'greenBright';
 				text +=" - верно";
