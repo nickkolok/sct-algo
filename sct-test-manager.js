@@ -77,6 +77,16 @@ function runMainlineTests(){
 			diameter: mainlineTests[i].diameter,
 			exists: true,
 		});
+		runTest({
+			power: mainlineTests[i].power,
+			diameter: mainlineTests[i].diameter-1,
+			exists: false,
+		});
+		runTest({
+			power: mainlineTests[i].power-1,
+			diameter: mainlineTests[i].diameter,
+			exists: true,
+		});
 	}
 }
 
