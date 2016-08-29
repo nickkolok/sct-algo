@@ -4,7 +4,7 @@
 function Point(x,y) {
 	this.x=x;
 	this.y=y;
-	this.weight=0;
+//	this.weight=0;
 };
 
 
