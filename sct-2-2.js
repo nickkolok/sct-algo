@@ -311,18 +311,22 @@ function separateX(cand){
 }
 
 // Стадии редукции
+var stage = 0;
+
 const
-	STAGE_VIRGIN = 0,
-	STAGE_STEP4 = 1,
-	STAGE_STEP2_SOFT = 2,
-	STAGE_STEP2X_SOFT = 3,
-	STAGE_STEP2_HARD = 4,
-	STAGE_STEP2X_HARD = 5,
-	STAGE_SYMMETRIC = 6,
-	STAGE_SYMMETRIC_MEASURED = 6,
-	STAGE_ASYMMETRIC = 8,
-	STAGE_ASYMMETRIC_MEASURED = 9,
-	STAGE_COMPLETE = 10;
+	STAGE_VIRGIN = stage++,
+	STAGE_STEP4_FIRSTMAPPING = stage++,
+	STAGE_STEP4_MAPPED = stage++,
+	STAGE_STEP4 = stage++,
+	STAGE_STEP2_SOFT = stage++,
+	STAGE_STEP2X_SOFT = stage++,
+	STAGE_STEP2_HARD = stage++,
+	STAGE_STEP2X_HARD = stage++,
+	STAGE_SYMMETRIC = stage++,
+	STAGE_SYMMETRIC_MEASURED = stage++,
+	STAGE_ASYMMETRIC = stage++,
+	STAGE_ASYMMETRIC_MEASURED = stage++,
+	STAGE_COMPLETE = stage++;
 
 function reduceNext(arr,minLinks,maxD,stage){
 
