@@ -396,12 +396,15 @@ var badPoint = new Point(Infinity,Infinity);
 
 function unweighted2soft(){
 	var firstBad;
-	for(var i=first2; i<first4-2-2;){
-		for(; i<first4-2-2; i+=2){
+//	console.log(points);
+//	console.log(first2,first4);
+	for(var i=first2; i<first4-4;){
+		for(; i<first4-4; i+=2){
 			if(!isGoodPoint(points[i])){
-				// Первую найденную пару - просто запороть
-				points[i  ] = badPoint;
-				points[i+1] = badPoint;
+//				console.log(points[i], i, ' - на удаление');
+				// Первую найденную пару - просто запороть/запомнить
+				//points[i  ] = badPoint;
+				//points[i+1] = badPoint;
 
 				// Мы злопамятные!
 				firstBad = i;
@@ -410,8 +413,10 @@ function unweighted2soft(){
 				break;
 			}
 		}
-		for(; i<first4-2; i+=2){
+		for(; i<first4-4; i+=2){
 			if(!isGoodPoint(points[i])){
+//				console.log(points[i], i, ' - удаляем');
+//				console.log("_",firstBad,i);
 				// Заменяем на "хорошие" точки с конца
 				points[i  ] = points[first4-1];
 				points[i+1] = points[first4-2];
@@ -429,6 +434,7 @@ function unweighted2soft(){
 				points.length-=4;
 				first4-=4;
 				i-=2;
+				break;
 			}
 		}
 	}
@@ -479,6 +485,7 @@ function unweighted2Xsoft(){
 				points.length-=4;
 				first4-=4;
 				i-=2;
+				break;
 			}
 		}
 	}
@@ -524,9 +531,9 @@ function setParams(p){
 	virgin = p.virgin; // Устанавливается для только что сгенерированного графа
 
 	if(virgin){
-		first4  || (first4 = +diameter - 1 + 2*Math.floor((+diameter+1)/2));
-		first2  || (first2 = +diameter - 1);
-		first2X || (first2 = 1 - diameter % 2);
+		first4  || (first4  = +diameter - 1 + 2*Math.floor((+diameter+1)/2));
+		first2  || (first2  = +diameter + 1);
+		first2X || (first2X = 1 - diameter % 2);
 	}
 
 //	onstep = p.onstep; // Функция, выполняемая после каждого шага
