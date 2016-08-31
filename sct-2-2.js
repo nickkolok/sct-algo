@@ -338,7 +338,27 @@ function reduceNext(arr,minLinks,maxD,stage){
 				points : arr,
 				power : minLinks+1,
 			});
-		//break;
+		break;
+		case STAGE_STEP4_FIRSTMAPPING:
+			// В любом случае пихаем в редуктор переданное
+			reduce.setParams({
+				diameter : maxD,
+				points : arr,
+				power : minLinks+1,
+			});
+			if(minLinks+1 > 10){
+				logTimestamp('Урезаем граф четвёрками с подсчётом соседей...');
+				reduce.unweighted4Mapped();
+			}
+		break;
+		case STAGE_STEP4_MAPPED:
+			if(minLinks+1 > 10){
+				logTimestamp('Начинаем сортировку...')
+				reduce.sortMap4();
+				logTimestamp('Сортировка окончена, урезаем...')
+				reduce.unweighted4MappedApply();
+			}
+		break;
 		case STAGE_STEP4:
 			// В любом случае пихаем в редуктор переданное
 			reduce.setParams({
@@ -467,6 +487,9 @@ function reduceCandidatePoints(arr,minLinks,maxD,stage/*asymmetric,group,first4*
 	if(lengthBefore>arr.length){
 		logTimestamp("Граф урезан: было "+lengthBefore+", стало "+arr.length,timeBefore);
 		serializeCandidatePoints(arr,minLinks+1,maxD);
+		if(stage == STAGE_STEP4_FIRSTMAPPING){
+			stage++;
+		}
 		reduceCandidatePoints(arr,minLinks,maxD,stage);
 	}else{
 		logTimestamp("Холостой проход по графу",timeBefore);

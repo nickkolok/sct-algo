@@ -215,6 +215,21 @@ function isGoodPoint(point){
 	return false;
 }
 
+function isGoodPointMapped(point,i){
+	var links = 0;
+	for(var j=0; j<points.length; j++){
+		if(isZ(dist(point,points[j]))){
+			links++;
+			if(links >= minLinks){
+				lastfriendmap4.push([i,j]);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
 /*
 function isGoodPoint(point){
 	var links = 0;
@@ -325,6 +340,65 @@ function unweighted4(){
 			i-=4;
 		}
 	}
+}
+
+
+var pointsTransitionJournal = [];
+
+function deletePointIfBadMapped(i){
+	if(i>=points.length){
+		if(pointsTransitionJournal[i]){
+//			console.log('Перенаправление:' +i);
+			deletePointIfBadMapped(pointsTransitionJournal[i]);
+//		} else {
+//			console.log('В молоко:' +i,pointsTransitionJournal[i]);
+		}
+		return;
+	}
+	if(!isGoodPointMapped(points[i],i)){
+		points[i  ]=points[points.length-1];
+		points[i+1]=points[points.length-2];
+		points[i+2]=points[points.length-3];
+		points[i+3]=points[points.length-4];
+		pointsTransitionJournal[points.length-4] = i;
+		points.length-=4;
+		i-=4;
+	}
+
+}
+
+function unweighted4Mapped(){
+	lastfriendmap4 = [];
+//	console.log(points);
+	for(var i=first4; i<points.length; i+=4){
+		if(!isGoodPointMapped(points[i],i)){
+//			console.log(points[i],links,minLinks,points.length);
+			points[i  ]=points[points.length-1];
+			points[i+1]=points[points.length-2];
+			points[i+2]=points[points.length-3];
+			points[i+3]=points[points.length-4];
+			points.length-=4;
+			i-=4;
+		}
+	}
+}
+
+function sortMap4(){
+	lastfriendmap4.sort(
+		(a,b) => (b[1] - a[1])
+	);
+//	console.log(lastfriendmap4);
+}
+
+
+
+function unweighted4MappedApply(){
+	var oldlastfriendmap4 = lastfriendmap4;
+	lastfriendmap4 = [];
+	for(var j=0; j<oldlastfriendmap4.length; j++){
+		deletePointIfBadMapped(oldlastfriendmap4[j][0]);
+	}
+//	console.log(pointsTransitionJournal);
 }
 
 function unweighted4g2(){
@@ -500,17 +574,22 @@ module.exports.unweightedAsymmetric = unweightedAsymmetric;
 module.exports.unweightedSymmetricMeasured = unweightedSymmetricMeasured;
 module.exports.unweightedAsymmetricMeasured = unweightedAsymmetricMeasured;
 module.exports.unweighted4 = unweighted4;
+module.exports.sortMap4 = sortMap4;
+module.exports.unweighted4Mapped = unweighted4Mapped;
+module.exports.unweighted4MappedApply = unweighted4MappedApply;
 module.exports.unweighted4g2 = unweighted4g2;
 module.exports.unweighted2hard = unweighted2hard;
 module.exports.unweighted2soft = unweighted2soft;
 module.exports.unweighted2Xhard = unweighted2Xhard;
 module.exports.unweighted2Xsoft = unweighted2Xsoft;
 
+
 var
 	power,minLinks,diameter,diameterE,
 	points,
 	virgin,
 	first4,first2,first2X,
+	lastfriendmap4,
 	onstep
 ;
 
