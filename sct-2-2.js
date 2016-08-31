@@ -126,6 +126,23 @@ function mapFriendsCount(arr,maxD){
 	}
 }
 
+function mapFriendsCountNotMeasured(arr,pow,maxD){
+	var timeBefore = Date.now();
+	for(var i=0; i<arr.length; i++){
+		arr[i].friendsCount = 0;
+	}
+
+	for(var i=0; i<arr.length; i++){
+		for(var j=i+1; j<arr.length; j++){
+			if(isZ(dist(arr[i],arr[j]))){
+				arr[i].friendsCount++;
+				arr[j].friendsCount++;
+			}
+		}
+	}
+	logTimestamp('Расчёт количества смежных вершин', timeBefore);
+	serializeCandidatePoints(arr,pow,maxD,{multiline:true});
+}
 
 
 
