@@ -206,7 +206,12 @@ function deserializeCandidatePoints(pow,maxD,twice){
 		}
 		return deserializeCandidatePoints(pow-1,maxD,1);
 	}
-	var dump = dumps[dumps.length-1].full;
+	var dumpNumber = dumps.length-1;
+	if(options.useNthDump){
+		dumpNumber = options.useNthDump - 1;
+		logTimestamp('Используется не последний дамп, а '+options.useNthDump+'-й');
+	}
+	var dump = dumps[dumpNumber].full;
 	try{
 		logTimestamp('Найден дамп '+dump);
 		var rez = JSON.parse(fs.readFileSync(dump,'utf-8'));
