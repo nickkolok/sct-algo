@@ -128,13 +128,20 @@ function mapFriendsCount(arr,maxD){
 
 
 
-function serializeCandidatePoints(arr,pow,maxD){
-	if(nodumpwrite || found || pow <= 12){
+
+function serializeCandidatePoints(arr,pow,maxD,options){
+	if(nodumpwrite || found || pow <= 25){
 		return;
 	}
 	var timeBefore=Date.now();
 	var dumpName=pow+"_"+maxD+"_"+Date.now()+"_"+arr.length;
-	fs.writeFileSync("dumps/"+dumpName+".sct.json",JSON.stringify(arr));
+	var text = JSON.stringify(arr);
+	if(options){
+		if(options.multiline){
+			text = text.replace(/\}\,\{/g,"}, \n{")
+		}
+	}
+	fs.writeFileSync("dumps/"+dumpName+".sct.json",text);
 	logTimestamp("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
 	handlers.ondumpsaved();
 }
