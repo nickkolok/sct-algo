@@ -11,6 +11,21 @@ function dist(oV1, oV2) {
 	return Math.sqrt((oV2.x - oV1.x) * (oV2.x - oV1.x) + (oV2.y - oV1.y) * (oV2.y - oV1.y));
 }
 
+function writeFileSyncSafe(filename, content, successMessage, errorMessage){
+//	logTimestamp('Начинаем запись файла '+filename);
+	try {
+		fs.writeFileSync(filename,content);
+		if(successMessage){
+			logTimestamp(successMessage);
+		}
+		return true;
+	} catch (e) {
+		logTimestamp(errorMessage || 'Не удалось записать файл '+filename);
+		console.log(e);
+		return false;
+	}
+}
+
 
 function emptyFunction(){
 }
@@ -40,8 +55,7 @@ function logTimestamp(message,previousTime){
 
 function writeLog(power,diameter){
 	var logName = power+"_"+diameter+"_"+Date.now();
-	fs.writeFileSync("logs/"+logName+".sct.log",logstr);
-
+	writeFileSyncSafe("logs/"+logName+".sct.log",logstr);
 }
 
 function calculateCandidatePoints(d){
@@ -158,9 +172,14 @@ function serializeCandidatePoints(arr,pow,maxD,options){
 			text = text.replace(/\}\,\{/g,"}, \n{")
 		}
 	}
-	fs.writeFileSync("dumps/"+dumpName+".sct.json",text);
-	logTimestamp("Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)");
-	handlers.ondumpsaved();
+
+	if(writeFileSyncSafe(
+		"dumps/"+dumpName+".sct.json",
+		text,
+		"Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)"
+	)){
+		handlers.ondumpsaved();
+	}
 }
 
 
@@ -650,12 +669,8 @@ function logSCT(arr,pow,maxD){
 	}catch(e){
 		logTimestamp('Не удалось поднять флаг успешного нахождения');
 	}
-	try{
-		var dumpName=pow+"_"+maxD+"_"+Date.now();
-		fs.writeFileSync("found/"+dumpName+".sct.json",JSON.stringify(arr));
-	}catch(e){
-		logTimestamp('Не удалось записать найденную СЦТ в файл');
-	}
+	var dumpName=pow+"_"+maxD+"_"+Date.now();
+	writeFileSyncSafe("found/"+dumpName+".sct.json",JSON.stringify(arr),'','Не удалось записать найденную СЦТ в файл');
 	try{
 		handlers.onfound(arr,pow,maxD);
 	}catch(e){
