@@ -573,6 +573,7 @@ function findSCTs(targetPow,maxD){
 	}
 	var t=new Date().getTime();
 	var cand=getCandidatePoints(targetPow, maxD);
+//	mapFriendsCountNotMeasured(cand, targetPow, maxD);
 	reduceCandidatePoints(cand,targetPow-1,maxD,virginGraph?STAGE_VIRGIN:STAGE_SYMMETRIC);
 //	reduceCandidatePoints(cand,targetPow-1,maxD);
 	if(isNotTrivial(cand)){
