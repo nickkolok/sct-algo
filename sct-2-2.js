@@ -159,9 +159,20 @@ function mapFriendsCountNotMeasured(arr,pow,maxD){
 }
 
 
-
+var lastSerializedTime = Date.now();
+var lastSerializedLength = Infinity;
 function serializeCandidatePoints(arr,pow,maxD,options){
-	if(nodumpwrite || found || pow <= 25){
+	if(
+		nodumpwrite
+	||
+		found
+	||
+		pow <= 25
+	||
+		Date.now() - lastSerializedTime < 60*1000
+	||
+		lastSerializedLength <= arr.length
+	){
 		return;
 	}
 	var timeBefore=Date.now();
@@ -179,6 +190,8 @@ function serializeCandidatePoints(arr,pow,maxD,options){
 		"Дамп "+dumpName+" записан ("+(Date.now() - timeBefore)+" мс)"
 	)){
 		handlers.ondumpsaved();
+		lastSerializedTime = timeBefore;
+		lastSerializedLength = arr.length;
 	}
 }
 
