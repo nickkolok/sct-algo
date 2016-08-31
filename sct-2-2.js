@@ -524,7 +524,9 @@ function reduceCandidatePoints(arr,minLinks,maxD,stage/*asymmetric,group,first4*
 		}
 		reduceCandidatePoints(arr,minLinks,maxD,stage);
 	}else{
-		logTimestamp("Холостой проход по графу",timeBefore);
+		if(stage !== STAGE_VIRGIN){
+			logTimestamp("Холостой проход по графу",timeBefore);
+		}
 		reduceCandidatePoints(arr,minLinks,maxD,stage+1);
 	}
 }
