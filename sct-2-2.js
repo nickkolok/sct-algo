@@ -377,9 +377,9 @@ function reduceNext(arr,minLinks,maxD,stage){
 				power : minLinks+1,
 			});
 			logTimestamp('Урезаем граф мягкими двойками...');
-//			reduce.unweighted2soft();
+			reduce.unweighted2soft();
 			logTimestamp('Урезаем граф четвёрками...');
-//			reduce.unweighted4();
+			reduce.unweighted4();
 		break;
 		case STAGE_STEP2_HARD:
 			// В любом случае пихаем в редуктор переданное
