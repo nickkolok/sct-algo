@@ -23,6 +23,8 @@ const // Статусы процессов
 var state;
 
 function translateProcessStatus(proc){
+	if(proc.status > 10000)
+		return proc.status;
 	if(!proc)
 		return undefined;
 	return [0,1,undefined,6,undefined,5,6][proc.status];
@@ -41,6 +43,7 @@ function generateEmptyState(){
 }
 
 function saveState() {
+	logTimestamp('Сохраняем текущее состояние');
 	var savedState = [];
 	for(var i = 0; i < state.length; i++){
 		savedState[i]=[];
@@ -53,6 +56,7 @@ function saveState() {
 }
 
 function loadState() {
+	logTimestamp('Читаем сохранённое состояние');
 	generateEmptyState();
 
 	var states = ls('states/*.state.json');
@@ -76,7 +80,8 @@ function loadState() {
 
 function isStatusKillable(status){
 	return
-		status == RUNNING_NOTFOUNDYET
+//		status == RUNNING_NOTFOUNDYET
+		status > 10000
 	||
 		status == RUNNING_FOUND
 	||
@@ -136,7 +141,7 @@ function runCounter(pow,diam){
 			);
 			state[pow][diam].process.on('message', receiveMessage); // Получили сообщение от процесса-потомка
 
-			state[pow][diam].status = RUNNING_NOTFOUNDYET;
+			state[pow][diam].status = Date.now();//RUNNING_NOTFOUNDYET;
 			freeThreads--;
 			logTimestamp('Запущен процесс '+pow+'_'+diam);
 		} else {
@@ -176,6 +181,7 @@ function receiveMessage (m) {
 			}
 		break;
 	}
+	loadState();
 	runNextCounter();
 	saveState();
 }
@@ -184,7 +190,6 @@ function runNextCounter(pow,diam){
 	if(freeThreads <= 0){
 		return;
 	}
-
 
 	pow || (pow = 3);
 	diam || (diam = 1);
@@ -197,7 +202,8 @@ function runNextCounter(pow,diam){
 	if( // Если не найдено (неважно, процесс ещё запущен или уже отработал)
 		state[pow][diam].status == FINISHED_NOTFOUND
 	||
-		state[pow][diam].status == RUNNING_NOTFOUNDYET
+//		state[pow][diam].status == RUNNING_NOTFOUNDYET
+		state[pow][diam].status > 10000 && Date.now() - state[pow][diam].status < 24*60*60*1000
 	){
 		diam++;
 	} else if( // Если найдено (неважно, процесс ещё запущен или уже отработал)
@@ -213,8 +219,9 @@ function runNextCounter(pow,diam){
 		state[pow][diam].status = RUNNING_FOUND;
 	} else {
 		runCounter(pow,diam);
-		state[pow][diam].status = RUNNING_NOTFOUNDYET;
+//		state[pow][diam].status = RUNNING_NOTFOUNDYET;
 	}
+//	saveState();
 	runNextCounter(pow,diam);
 }
 
@@ -223,3 +230,4 @@ logTimestamp('Параллельных процессов: '+freeThreads);
 
 loadState();
 runNextCounter();
+saveState();
