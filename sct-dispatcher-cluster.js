@@ -2,6 +2,21 @@ var fs = require('fs');
 var ls = require('ls');
 var child_process=require('child_process');
 
+var options = {
+	counterDeadTime: 4*60*60*1000,
+};
+try{
+	if(process.argv[4]){
+		var parsedOptions = JSON.parse(process.argv[4]);
+		for(var opt in parsedOptions){
+			options[opt] = parsedOptions[opt];
+		}
+	}
+}catch(e){
+	console.log('Не удалось распознать список опций');
+}
+
+
 
 function logTimestamp(message){
 	var now = new Date();
@@ -102,6 +117,8 @@ function isStatusRunnable(status){
 		status == null
 	||
 		status == STOPPED_FOUND
+	||
+		(Date.now() - status > options.counterDeadTime)
 	);
 }
 
@@ -203,7 +220,7 @@ function runNextCounter(pow,diam){
 		state[pow][diam].status == FINISHED_NOTFOUND
 	||
 //		state[pow][diam].status == RUNNING_NOTFOUNDYET
-		state[pow][diam].status > 10000 && Date.now() - state[pow][diam].status < 24*60*60*1000
+		state[pow][diam].status > 10000 && Date.now() - state[pow][diam].status < options.counterDeadTime
 	){
 		diam++;
 	} else if( // Если найдено (неважно, процесс ещё запущен или уже отработал)
@@ -217,7 +234,7 @@ function runNextCounter(pow,diam){
 	){
 		runCounter(pow,diam);
 		state[pow][diam].status = RUNNING_FOUND;
-	} else {
+	} else if(isProcessRunnable(pow,diam)){
 		runCounter(pow,diam);
 //		state[pow][diam].status = RUNNING_NOTFOUNDYET;
 	}
