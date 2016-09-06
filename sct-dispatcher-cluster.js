@@ -23,10 +23,10 @@ const // Статусы процессов
 var state;
 
 function translateProcessStatus(proc){
-	if(proc.status > 10000)
-		return proc.status;
 	if(!proc)
 		return undefined;
+	if(proc.status > 10000)
+		return proc.status;
 	return [0,1,undefined,6,undefined,5,6][proc.status];
 }
 
@@ -160,6 +160,7 @@ function runElder(pow,diam){
 }
 
 function receiveMessage (m) {
+	loadState();
 	logTimestamp('Принято сообщение от процесса '+m.power+'_'+m.diameter+':  '+JSON.stringify(m));
 	switch(m.type){
 		case 'found':
@@ -181,7 +182,6 @@ function receiveMessage (m) {
 			}
 		break;
 	}
-	loadState();
 	runNextCounter();
 	saveState();
 }
