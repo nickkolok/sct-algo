@@ -180,7 +180,7 @@ function serializeCandidatePoints(arr,pow,maxD,options){
 	var text = JSON.stringify(arr);
 	if(options){
 		if(options.multiline){
-			text = text.replace(/\}\,\{/g,"}, \n{")
+			text = text.replace(/\}\,\{/g,"},\n{")
 		}
 	}
 
