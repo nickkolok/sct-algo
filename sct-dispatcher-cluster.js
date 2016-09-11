@@ -59,6 +59,8 @@ function generateEmptyState(){
 
 function saveState() {
 	logTimestamp('Сохраняем текущее состояние');
+	dropNulls();
+	cutNulls();
 	var savedState = [];
 	for(var i = 0; i < state.length; i++){
 		savedState[i]=[];
@@ -257,9 +259,6 @@ function runNextCounter(pow,diam){
 	runNextCounter(pow,diam);
 }
 
-var freeThreads = process.argv[2] || require('os').cpus().length;
-logTimestamp('Параллельных процессов: '+freeThreads);
-
 function makeAllCountersDead(){
 	for(var power = 0; power < state.length; power++){
 		if(state[power] && state[power].length){
@@ -272,6 +271,39 @@ function makeAllCountersDead(){
 		}
 	}
 }
+
+function dropNulls(){
+	var nullsDropped = 0;
+	for(var power = 0; power < state.length; power++){
+		if(state[power] && state[power].length){
+			for(var diameter = 0; diameter < state[power].length; diameter++){
+				if(state[power] && state[power][diameter] && state[power][diameter].status === 0){
+					if(state[power+1] && state[power+1][diameter] && state[power+1][diameter].status === null){
+						state[power+1][diameter].status = 0;
+					}
+				}
+			}
+		}
+	}
+	logTimestamp('Нулей сброшено: '+nullsDropped);
+}
+
+function cutNulls(){
+	var nullsCut = 0;
+	for(var power = 0; power < state.length; power++){
+		if(state[power] && state[power].length){
+			for(var diameter = state[power].length - 1; state[power][diameter].status === null ; diameter--){
+				state[power].length--;
+				nullsCut++;
+			}
+		}
+	}
+	logTimestamp('Нулей срезано: '+nullsCut);
+}
+
+
+var freeThreads = process.argv[2] || require('os').cpus().length;
+logTimestamp('Параллельных процессов: '+freeThreads);
 
 loadState();
 if(options.makeAllCountersDead){
