@@ -18,7 +18,7 @@ function areSymmetric(a,b){
 	return a && b &&
 		(a.x==-b.x || a.x==b.x)
 	&&
-		(a.y==b.y || a.y==diameter-b.y)
+		(a.y==b.y || (Math.abs(a.y+b.y-diameter) < epsilon))
 	;
 }
 
