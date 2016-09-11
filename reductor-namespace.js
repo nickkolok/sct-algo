@@ -600,6 +600,7 @@ module.exports.unweighted2hard = unweighted2hard;
 module.exports.unweighted2soft = unweighted2soft;
 module.exports.unweighted2Xhard = unweighted2Xhard;
 module.exports.unweighted2Xsoft = unweighted2Xsoft;
+module.exports.checkGraphVirginity = checkGraphVirginity;
 
 
 var
@@ -610,6 +611,55 @@ var
 	lastfriendmap4,
 	onstep
 ;
+
+function checkGraphVirginity(){
+	// Если диаметр чётный, должно начинаться с центра
+	if(1 - diameter % 2){
+		if(points[0].x != 0 || points[0].y != diameter/2){
+//			console.log(1);
+			return false;
+		}
+	}
+	var f2X = 1 - diameter % 2
+	var f2 = f2X;
+
+	// Выбираем осевые двойки
+	while(
+		points[f2].x == 0
+	&&
+		points[f2+1].x == 0
+	&&
+		Math.abs(points[f2].y + points[f2+1].y - diameter) < epsilon
+
+	){
+		f2+=2;
+	}
+
+	// Теперь - четвёрки с конца
+	var f4 = points.length - 4;
+	while(
+		areSymmetric(points[f4],points[f4+1])
+	&&
+		areSymmetric(points[f4],points[f4+2])
+	&&
+		areSymmetric(points[f4],points[f4+3])
+	){
+		f4-=4;
+	}
+
+	// Удостоверяемся, что всё оставшееся - симметричные двойки
+	for(var i = f2; i<f4; i+=2){
+		if(!areSymmetric(points[i],points[i+1])){
+//			console.log(f2X,f2,f4,points[i],points[i+1])
+			return false;
+		}
+	}
+	first4  = f4 ;
+	first2  = f2 ;
+	first2X = f2X;
+	return true;
+}
+
 
 
 function setParams(p){
