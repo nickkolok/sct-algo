@@ -59,7 +59,14 @@ function logResultIfReady(){
 function runTest(test){
 	var child = child_process.fork(
 		__dirname + '/sct-runner.js',
-		[test.power,test.diameter,process.argv[2],JSON.stringify({nodumpload:true,})],
+		[
+			test.power,
+			test.diameter,
+			process.argv[2] || '',
+			JSON.stringify({
+				nodumpload:true,
+			})
+		],
 		{
 			silent:true
 		}
