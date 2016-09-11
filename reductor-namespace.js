@@ -367,6 +367,22 @@ function deletePointIfBadMapped(i){
 
 }
 
+var lastAliveTime = 0;
+var aliveInterval = 60 * 1000;
+function trySendAlive(){
+	if(Date.now() > lastAliveTime + aliveInterval){
+		lastAliveTime = Date.now();
+		try{
+			process.send({
+				type:'alive',
+				power: power,
+				diameter: diameter,
+			});
+		}catch(e){
+		}
+	}
+}
+
 function unweighted4Mapped(){
 	lastfriendmap4 = [];
 //	console.log(points);
@@ -380,6 +396,7 @@ function unweighted4Mapped(){
 			points.length-=4;
 			i-=4;
 		}
+		trySendAlive();
 	}
 }
 
@@ -397,6 +414,7 @@ function unweighted4MappedApply(){
 	lastfriendmap4 = [];
 	for(var j=0; j<oldlastfriendmap4.length; j++){
 		deletePointIfBadMapped(oldlastfriendmap4[j][0]);
+		trySendAlive();
 	}
 //	console.log(pointsTransitionJournal);
 }

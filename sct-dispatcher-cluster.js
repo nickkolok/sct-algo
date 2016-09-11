@@ -3,7 +3,7 @@ var ls = require('ls');
 var child_process=require('child_process');
 
 var options = {
-	counterDeadTime: 4*60*60*1000,
+	counterDeadTime: 6*60*60*1000,
 };
 try{
 	if(process.argv[4]){
@@ -196,6 +196,18 @@ function receiveMessage (m) {
 			if(state[m.power][m.diameter].status == PENDING_KILL){
 				killProcess(m.power,m.diameter);
 				state[m.power][m.diameter].status = NOTNEEDED;
+			} else if (state[m.power][m.diameter].status > 10000){
+				// Фиксируем, что процесс выходил на связь
+				state[m.power][m.diameter].status = Date.now();
+			}
+		break;
+		case 'alive':
+			if(state[m.power][m.diameter].status == PENDING_KILL){
+				// Тут бы по-хорошему посмотреть, что там с процессом бОльшей мощности...
+				// TODO: сделать
+			} else if (Date.now() - state[m.power][m.diameter].status < 60*1000){
+				// Тогда неинтересно!
+				return;
 			} else if (state[m.power][m.diameter].status > 10000){
 				// Фиксируем, что процесс выходил на связь
 				state[m.power][m.diameter].status = Date.now();
