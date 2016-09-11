@@ -196,15 +196,15 @@ function serializeCandidatePoints(arr,pow,maxD,options){
 }
 
 
-function deserializeCandidatePoints(pow,maxD,twice){
+function deserializeCandidatePoints(pow,maxD){
 	var dumps = ls('dumps/'+pow+'_'+maxD+'_*.sct.json');
 	if(!dumps.length){
 		// Нет нужного дампа
 		logTimestamp('Дамп для мощности '+pow+' и основания  '+maxD+' не найден');
-		if(twice){
+		if(pow<=20){
 			return false;
 		}
-		return deserializeCandidatePoints(pow-1,maxD,1);
+		return deserializeCandidatePoints(pow-1,maxD);
 	}
 	var dumpNumber = dumps.length-1;
 	if(options.useNthDump){
