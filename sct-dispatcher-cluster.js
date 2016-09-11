@@ -205,7 +205,7 @@ function receiveMessage (m) {
 			if(state[m.power][m.diameter].status == PENDING_KILL){
 				// Тут бы по-хорошему посмотреть, что там с процессом бОльшей мощности...
 				// TODO: сделать
-			} else if (Date.now() - state[m.power][m.diameter].status < 60*1000){
+			} else if (Date.now() - state[m.power][m.diameter].status < 20*60*1000){
 				// Тогда неинтересно!
 				return;
 			} else if (state[m.power][m.diameter].status > 10000){
