@@ -194,8 +194,11 @@ function receiveMessage (m) {
 		break;
 		case 'step':
 			if(state[m.power][m.diameter].status == PENDING_KILL){
-			killProcess(m.power,m.diameter);
+				killProcess(m.power,m.diameter);
 				state[m.power][m.diameter].status = NOTNEEDED;
+			} else if (state[m.power][m.diameter].status > 10000){
+				// Фиксируем, что процесс выходил на связь
+				state[m.power][m.diameter].status = Date.now();
 			}
 		break;
 	}
