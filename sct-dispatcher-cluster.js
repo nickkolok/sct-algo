@@ -260,6 +260,22 @@ function runNextCounter(pow,diam){
 var freeThreads = process.argv[2] || require('os').cpus().length;
 logTimestamp('Параллельных процессов: '+freeThreads);
 
+function makeAllCountersDead(){
+	for(var power = 0; power < state.length; power++){
+		if(state[power] && state[power].length){
+			for(var diameter = 1; diameter < state[power].length; diameter++){
+				if(state[power][diameter].status > 10000){
+					// Если была отметка о том, что процесс запущен
+					state[power][diameter].status = undefined;
+				}
+			}
+		}
+	}
+}
+
 loadState();
+if(options.makeAllCountersDead){
+	makeAllCountersDead();
+}
 runNextCounter();
 saveState();
