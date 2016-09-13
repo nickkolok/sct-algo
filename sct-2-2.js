@@ -196,15 +196,26 @@ function serializeCandidatePoints(arr,pow,maxD,options){
 }
 
 
-function deserializeCandidatePoints(pow,maxD){
-	var dumps = ls('dumps/'+pow+'_'+maxD+'_*.sct.json');
-	if(!dumps.length){
-		// Нет нужного дампа
-		logTimestamp('Дамп для мощности '+pow+' и основания  '+maxD+' не найден');
-		if(pow<=20){
-			return false;
+function getDumpsArray(power,diameter){
+	var dumpsArray = [];
+	for(var p = power; p >= 20; p--){
+		var dumps = ls('dumps/'+p+'_'+diameter+'_*.sct.json');
+		if(!dumps.length){
+			// Нет нужного дампа
+			logTimestamp('Дамп для мощности '+p+' и основания  '+diameter+' не найден');
 		}
-		return deserializeCandidatePoints(pow-1,maxD);
+		dumpsArray =  dumpsArray.concat(dumps);
+	}
+	if(!dumpsArray.length){
+		logTimestamp('Ни одного подходящего дампа для мощности '+power+' и основания '+diameter+' не найдено')
+	}
+	return dumpsArray;
+}
+
+function deserializeCandidatePoints(pow,maxD){
+	var dumps = getDumpsArray(pow,maxD);
+	if(!dumps.length){
+		return false;
 	}
 	var dumpNumber = dumps.length-1;
 	if(options.useNthDump){
