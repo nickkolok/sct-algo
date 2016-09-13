@@ -212,16 +212,19 @@ function getDumpsArray(power,diameter){
 	return dumpsArray;
 }
 
-function deserializeCandidatePoints(pow,maxD){
-	var dumps = getDumpsArray(pow,maxD);
-	if(!dumps.length){
-		return false;
-	}
+function sortDumpsArray(dumpsArray){
+	dumpsArray.sort(function(a,b){
+		return b.name.split(/[_\.]/g)[3] - a.name.split(/[_\.]/g)[3];
+	});
+}
+
+function loadDump(dumps){
 	var dumpNumber = dumps.length-1;
 	if(options.useNthDump){
 		dumpNumber = options.useNthDump - 1;
 		logTimestamp('Используется не последний дамп, а '+options.useNthDump+'-й');
 	}
+
 	var dump = dumps[dumpNumber].full;
 	try{
 		logTimestamp('Найден дамп '+dump);
@@ -231,8 +234,20 @@ function deserializeCandidatePoints(pow,maxD){
 	}catch(e){
 		logTimestamp('Ошибка при чтении дампа '+dump);
 		logTimestamp(e);
+		dumps.length--;
+		return loadDump(dumps);
+	}
+}
+
+function deserializeCandidatePoints(pow,maxD){
+	var dumps = getDumpsArray(pow,maxD);
+	sortDumpsArray(dumps);
+	console.log(dumps);
+	if(!dumps.length){
+		logTimeout('Не удалось прочесть ни одного дампа для мощности '+power+' и основания '+diameter);
 		return false;
 	}
+	return loadDump(dumps);
 }
 
 function mapFriends(cand,maxD){
