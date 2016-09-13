@@ -219,6 +219,7 @@ function deserializeCandidatePoints(pow,maxD){
 		return rez;
 	}catch(e){
 		logTimestamp('Ошибка при чтении дампа '+dump);
+		logTimestamp(e);
 		return false;
 	}
 }
