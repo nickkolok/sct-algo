@@ -383,6 +383,19 @@ function trySendAlive(){
 	}
 }
 
+var lastSaveTime = 0;
+var saveInterval = 30 * 60 * 1000;
+function trySave(){
+	if(Date.now() > lastSaveTime + saveInterval){
+		lastSaveTime = Date.now();
+		try{
+			onstep();
+		}catch(e){
+		}
+	}
+}
+
+
 function unweighted4Mapped(){
 	lastfriendmap4 = [];
 //	console.log(points);
@@ -397,6 +410,7 @@ function unweighted4Mapped(){
 			i-=4;
 		}
 		trySendAlive();
+		trySave();
 	}
 }
 
@@ -683,7 +697,7 @@ function setParams(p){
 		first2X || (first2X = 1 - diameter % 2);
 	}
 
-//	onstep = p.onstep; // Функция, выполняемая после каждого шага
+	onstep = p.onstep; // Функция, выполняемая после каждого шага
 
 }
 module.exports.setParams = setParams;

@@ -382,6 +382,7 @@ function reduceNext(arr,minLinks,maxD,stage){
 				diameter : maxD,
 				points : arr,
 				power : minLinks+1,
+				onstep: function(){serializeCandidatePoints(arr,minLinks+1,maxD);},
 			});
 			if(minLinks+1 > 10){
 				logTimestamp('Урезаем граф четвёрками с подсчётом соседей...');
